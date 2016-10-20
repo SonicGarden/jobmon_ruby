@@ -1,8 +1,7 @@
 module Jobmon
   class Client
     def host
-      # FIXME: 開発時のみ devにする
-      'http://job-mon.dev/' # 'https://job-mon.herokuapp.com'
+      'https://job-mon.herokuapp.com'
     end
 
     def conn
