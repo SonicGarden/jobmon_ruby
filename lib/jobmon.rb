@@ -1,5 +1,10 @@
-require "jobmon/version"
+require 'rails'
+require 'faraday'
+require 'faraday_middleware'
 
 module Jobmon
-  # Your code goes here...
 end
+
+require "jobmon/version"
+require 'jobmon/client'
+require 'jobmon/configure'
