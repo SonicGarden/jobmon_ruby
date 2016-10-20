@@ -10,7 +10,7 @@ Gem::Specification.new do |spec|
   spec.email         = [""]
 
   spec.summary       = %q{Jobmon}
-  spec.description   = %q{Jobmon.}
+  spec.description   = %q{Jobmon}
   spec.homepage      = "https://github.com/SonicGarden/jobmon_ruby"
   spec.license       = "MIT"
 
