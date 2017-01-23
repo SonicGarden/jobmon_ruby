@@ -34,14 +34,17 @@ module Jobmon
     end
 
     def job_end(job_id)
-      if job_id
+      return unless job_id
         body = {
           job: {
             rails_env: Rails.env,
           }
         }
-        conn.put "/api/apps/#{api_key}/jobs/#{job_id}/finished.json", body
-      end
+        response = conn.put "/api/apps/#{api_key}/jobs/#{job_id}/finished.json", body
+        response.body['id']
+      rescue => e
+        Jobmon.configure.error_handle.call(e)
+        nil
     end
 
     def send_queue_log(count)
