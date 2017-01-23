@@ -23,6 +23,7 @@ module Jobmon
           name: task.name,
           end_time: Time.current.since(estimate_time),
           email: monitor_email,
+          rails_env: Rails.env,
         }
       }
       response = conn.post "/api/apps/#{api_key}/jobs.json", body
@@ -34,7 +35,12 @@ module Jobmon
 
     def job_end(job_id)
       if job_id
-        conn.put "/api/apps/#{api_key}/jobs/#{job_id}/finished.json"
+        body = {
+          job: {
+            rails_env: Rails.env,
+          }
+        }
+        conn.put "/api/apps/#{api_key}/jobs/#{job_id}/finished.json", body
       end
     end
 

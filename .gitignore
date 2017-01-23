@@ -1,2 +1,2 @@
-/config
+/config/initializers/jobmon.rb
 /Gemfile.lock
