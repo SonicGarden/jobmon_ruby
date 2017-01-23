@@ -23,6 +23,7 @@ module Jobmon
           name: task.name,
           end_time: Time.current.since(estimate_time),
           email: monitor_email,
+          rails_env: Rails.env,
         }
       }
       response = conn.post "/api/apps/#{api_key}/jobs.json", body
@@ -33,9 +34,17 @@ module Jobmon
     end
 
     def job_end(job_id)
-      if job_id
-        conn.put "/api/apps/#{api_key}/jobs/#{job_id}/finished.json"
-      end
+      return unless job_id
+        body = {
+          job: {
+            rails_env: Rails.env,
+          }
+        }
+        response = conn.put "/api/apps/#{api_key}/jobs/#{job_id}/finished.json", body
+        response.body['id']
+      rescue => e
+        Jobmon.configure.error_handle.call(e)
+        nil
     end
 
     def send_queue_log(count)
