@@ -17,12 +17,11 @@ module Jobmon
       Jobmon.configure.monitor_api_key
     end
 
-    def job_start(task, estimate_time, monitor_email)
+    def job_start(task, estimate_time)
       body = {
         job: {
           name: task.name,
           end_time: Time.current.since(estimate_time),
-          email: monitor_email,
           rails_env: Rails.env,
         }
       }
