@@ -18,17 +18,13 @@ Or install it yourself as:
 
 ## Usage
 
-以下のコマンドを実行すると、監視のための設定ファイルが自動的に生成されます。
+https://job-mon.sonicgarden.jp/apps で監視するアプリケーションを登録します。
+
+登録したアプリケーションの情報をもとに、`config/initializers/jobmon.rb`を作成します。
 
 ```
-bin/rails g dekiru
-```
-
-メールアドレス、例外時の処理などは必要に応じて変更します。
-
-```
+## config/initializers/jobmon.rb
 Jobmon.configure do |config|
-  config.monitor_email   = "email@example.com"
   config.monitor_api_key = "xxxxx-xxxx-xxxx-xxxx-xxxxxxxxx"
   config.error_handle    = -> (e) { Bugsnag.notify(e) }
 end
