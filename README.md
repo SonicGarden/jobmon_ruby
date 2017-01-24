@@ -20,15 +20,13 @@ Or install it yourself as:
 
 https://job-mon.sonicgarden.jp/apps で監視するアプリケーションを登録します。
 
-登録したアプリケーションの情報をもとに、`config/initializers/jobmon.rb`を作成します。
+以下のコマンドを実行します。
 
 ```
-## config/initializers/jobmon.rb
-Jobmon.configure do |config|
-  config.monitor_api_key = "xxxxx-xxxx-xxxx-xxxx-xxxxxxxxx"
-  config.error_handle    = -> (e) { Bugsnag.notify(e) }
-end
+bin/rails g jobmon
 ```
+
+作成された`config/initializers/jobmon.rb`に監視するアプリケーションの`api_key`を設定します。
 
 Rakefile にて、'jobmon/rake_monitor' を読み込みます。
 
