@@ -8,11 +8,11 @@ describe Jobmon::Client do
   let(:task) { TaskDefine.new('task') }
 
   context '#job_start' do
-    it { expect(job_mon.job_start(task, 10, 'email@example.com')).not_to be_nil }
+    it { expect(job_mon.job_start(task, 10)).not_to be_nil }
   end
 
   context '#job_end' do
-    let!(:job_id) { job_mon.job_start(task, 10, 'email@example.com') }
+    let!(:job_id) { job_mon.job_start(task, 10) }
 
     it { expect(job_mon.job_end(job_id)).not_to be_nil }
   end

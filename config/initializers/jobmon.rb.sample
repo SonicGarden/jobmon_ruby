@@ -7,7 +7,6 @@ module Jobmon
 end
 
 Jobmon.configure do |config|
-  config.monitor_email   = "email@example.com"
   config.monitor_api_key = "xxxxx-xxxx-xxxx-xxxx-xxxxxxxxx"
   config.error_handle    = -> (e) { raise e }
 end

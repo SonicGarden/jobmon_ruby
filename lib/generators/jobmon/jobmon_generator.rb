@@ -8,25 +8,10 @@ class JobmonGenerator < Rails::Generators::Base
     initializer 'jobmon.rb' do
       <<-EOF
 Jobmon.configure do |config|
-  config.monitor_email   = "support+#{fetch_app_name}@sonicgarden.jp"
-  config.monitor_api_key = "#{fetch_api_key}"
+  config.monitor_api_key = "xxxxx-xxxx-xxxx-xxxx-xxxxxxxxx"
+  config.error_handle    = -> (e) { Bugsnag.notify(e) }
 end
       EOF
     end
-  end
-
-  def client
-    @client ||= Jobmon::Client.new
-  end
-
-  private
-
-  def fetch_api_key
-    res = client.conn.post '/api/apps.json', app: { name: fetch_app_name }
-    res.body['api_key']
-  end
-
-  def fetch_app_name
-    File.basename(Rails.root)
   end
 end
