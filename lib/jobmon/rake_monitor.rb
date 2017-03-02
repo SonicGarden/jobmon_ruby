@@ -9,14 +9,10 @@ module Jobmon
       @client ||= Jobmon::Client.new
     end
 
-    def monitor_email
-      Jobmon.configure.monitor_email
-    end
-
     def task_with_monitor(*args, &block)
       args, estimate_time = resolve_args(args)
       task *args do |t|
-        job_id = client.job_start(t, estimate_time, monitor_email)
+        job_id = client.job_start(t, estimate_time)
         block.call
         client.job_end(job_id)
       end
