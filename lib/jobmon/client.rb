@@ -1,7 +1,7 @@
 module Jobmon
   class Client
     def host
-      'https://job-mon.herokuapp.com'
+      'https://job-mon.sg-apps.com'
     end
 
     def conn
