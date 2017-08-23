@@ -1,5 +1,3 @@
-require 'jobmon/client'
-
 namespace :jobmon do
   desc 'Ops monitor for Delayed::Job queue for job-mon'
   task delayed_job_queue_monitor: :environment do
