@@ -37,7 +37,7 @@ bundle exec rake jobmon:test_job
 rake で、`task_with_monitor` を使ってタスクを記述することで、 task を監視することができます。
 
 ```
-task_with_monitor job: :environment, estimate_time: 10 do
+task_with_monitor job: :environment, estimate_time: 10.minutes do
   puts "execute"
 end
 ```
