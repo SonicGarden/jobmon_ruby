@@ -13,8 +13,11 @@ module Jobmon
       args, estimate_time = resolve_args(args)
       task *args do |t|
         job_id = client.job_start(t, estimate_time)
-        block.call(t)
-        client.job_end(job_id)
+        begin
+          block.call(t)
+        ensure
+          client.job_end(job_id)
+        end
       end
     end
   end
