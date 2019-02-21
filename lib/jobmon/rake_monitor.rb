@@ -13,19 +13,19 @@ module Jobmon
       args, estimate_time = resolve_args(args)
       task *args do |t|
         job_id = client.job_start(t, estimate_time)
-        log "[JobMon][INFO] job_id: #{job_id} started."
+        log(t, job_id, :started)
         begin
           block.call(t)
         ensure
-          log "[JobMon][INFO] job_id: #{job_id} finished."
+          log(t, job_id, :finished)
           client.job_end(job_id)
         end
       end
     end
 
-    def log(message)
+    def log(task, job_id, type)
       if defined?(Rails) && Rails.logger
-        Rails.logger.info message
+        Rails.logger.info "[#{task.timestamp}][JobMon][INFO] #{task.name} (job_id: #{job_id}) #{type.to_s}."
       end
     end
   end
