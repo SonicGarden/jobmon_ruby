@@ -11,14 +11,21 @@ module Jobmon
 
     def task_with_monitor(*args, &block)
       args, estimate_time = resolve_args(args)
-      task *args do |t|
-        job_id = client.job_start(t, estimate_time)
-        log(t, job_id, :started)
-        begin
+
+      if Jobmon.available?
+        task *args do |t|
+          job_id = client.job_start(t, estimate_time)
+          log(t, job_id, :started)
+          begin
+            block.call(t)
+          ensure
+            log(t, job_id, :finished)
+            client.job_end(job_id)
+          end
+        end
+      else
+        task *args do |t|
           block.call(t)
-        ensure
-          log(t, job_id, :finished)
-          client.job_end(job_id)
         end
       end
     end
