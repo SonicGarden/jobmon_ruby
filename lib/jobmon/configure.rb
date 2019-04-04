@@ -6,7 +6,7 @@ module Jobmon
   end
 
   def self.available?
-    @configure.available_release_stagings.include?(Rails.env)
+    configure.available_release_stagings.include?(Rails.env)
   end
 
   class Configure
