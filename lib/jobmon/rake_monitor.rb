@@ -1,8 +1,11 @@
 module Jobmon
   module RakeMonitor
     def resolve_args(args)
-      estimate_time = args.first.delete(:estimate_time)
-      [args, estimate_time]
+      options = args.first
+      estimate_time = options.delete(:estimate_time)
+      skip_jobmon_available_check = options.delete(:skip_jobmon_available_check)
+
+      [args, { estimate_time: estimate_time, skip_jobmon_available_check: skip_jobmon_available_check }]
     end
 
     def client
@@ -10,11 +13,11 @@ module Jobmon
     end
 
     def task_with_monitor(*args, &block)
-      args, estimate_time = resolve_args(args)
+      args, options = resolve_args(args)
 
-      if Jobmon.available?
+      if Jobmon.available? || options[:skip_jobmon_available_check]
         task *args do |t|
-          job_id = client.job_start(t, estimate_time)
+          job_id = client.job_start(t, options[:estimate_time])
           log(t, job_id, :started)
           begin
             block.call(t)
