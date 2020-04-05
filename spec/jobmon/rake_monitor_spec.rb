@@ -59,4 +59,14 @@ describe Jobmon::RakeMonitor do
       SampleModule.task_with_monitor(sample: :development) {}
     end
   end
+
+  context 'no options' do
+    it 'calls #job_start and #job_end' do
+      client = Jobmon::Client.new
+      expect(client).to receive(:job_start).with(anything, 3.minutes).once
+      expect(client).to receive(:job_end).once
+      SampleModule.client = client
+      SampleModule.task_with_monitor(:sample) {}
+    end
+  end
 end
