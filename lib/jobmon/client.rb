@@ -5,7 +5,7 @@ module Jobmon
     end
 
     def conn
-      @conn ||= Faraday.new(:url => host) do |faraday|
+      @conn ||= Faraday.new(url: host) do |faraday|
         faraday.request  :url_encoded
         faraday.request  :json
         faraday.response :json
@@ -17,8 +17,8 @@ module Jobmon
       Jobmon.configuration.monitor_api_key
     end
 
-    def job_monitor(task, estimate_time, &block)
-      job_id = job_start(task, estimate_time)
+    def job_monitor(name, estimate_time, &block)
+      job_id = job_start(name, estimate_time)
       begin
         yield(job_id)
       ensure
@@ -26,10 +26,10 @@ module Jobmon
       end
     end
 
-    def job_start(task, estimate_time)
+    def job_start(name, estimate_time)
       body = {
         job: {
-          name: task.name,
+          name: name,
           end_time: Time.current.since(estimate_time),
           rails_env: Rails.env,
         }

@@ -17,7 +17,7 @@ module Jobmon
 
       task *args do |_task, _args|
         if Jobmon.available? || options[:skip_jobmon_available_check]
-          client.job_monitor(_task, options[:estimate_time]) do |job_id|
+          client.job_monitor(_task.name, options[:estimate_time]) do |job_id|
             log(_task, job_id, _args, :started)
             yield(_task, _args)
             log(_task, job_id, _args, :finished)

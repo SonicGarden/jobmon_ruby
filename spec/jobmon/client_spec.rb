@@ -1,11 +1,8 @@
 require 'spec_helper'
 require 'ostruct'
 
-TaskDefine = Struct.new(:name)
-
 describe Jobmon::Client do
   let(:job_mon) { Jobmon::Client.new }
-  let(:task) { TaskDefine.new('task') }
   let(:stubs) { Faraday::Adapter::Test::Stubs.new }
   let(:conn) do
     Faraday.new do |b|
@@ -30,7 +27,7 @@ describe Jobmon::Client do
           raise Faraday::ConnectionFailed, nil
         end
 
-        expect { |b| job_mon.job_monitor(task, 10, &b) }.to yield_control
+        expect { |b| job_mon.job_monitor('task', 10, &b) }.to yield_control
         stubs.verify_stubbed_calls
       end
     end
@@ -48,7 +45,7 @@ describe Jobmon::Client do
           raise Faraday::ConnectionFailed, nil
         end
 
-        expect { |b| job_mon.job_monitor(task, 10, &b) }.to yield_control
+        expect { |b| job_mon.job_monitor('task', 10, &b) }.to yield_control
         stubs.verify_stubbed_calls
       end
     end
@@ -63,7 +60,7 @@ describe Jobmon::Client do
           '{"id": 333}'
         ]
       end
-      expect(job_mon.job_start(task, 10)).to eq 333
+      expect(job_mon.job_start('task', 10)).to eq 333
       stubs.verify_stubbed_calls
     end
   end

@@ -21,7 +21,7 @@ describe Jobmon::RakeMonitor do
   context 'without error' do
     it 'calls #job_start and #job_end' do
       client = Jobmon::Client.new
-      expect(client).to receive(:job_start).with(anything, 10.minutes).once
+      expect(client).to receive(:job_start).with('test', 10.minutes).once
       expect(client).to receive(:job_end).once
       SampleModule.client = client
       SampleModule.task_with_monitor(sample: :development, estimate_time: 10.minutes) {}
@@ -43,7 +43,7 @@ describe Jobmon::RakeMonitor do
   context 'with args' do
     it 'calls #job_start and #job_end' do
       client = Jobmon::Client.new
-      expect(client).to receive(:job_start).with(anything, 10.minutes).once
+      expect(client).to receive(:job_start).with('test', 10.minutes).once
       expect(client).to receive(:job_end).once
       SampleModule.client = client
       SampleModule.task_with_monitor(:sample, [:arg1, :arg2] => :development, estimate_time: 10.minutes) {}
@@ -53,7 +53,7 @@ describe Jobmon::RakeMonitor do
   context 'default estimate_time' do
     it 'calls #job_start and #job_end' do
       client = Jobmon::Client.new
-      expect(client).to receive(:job_start).with(anything, 3.minutes).once
+      expect(client).to receive(:job_start).with('test', 3.minutes).once
       expect(client).to receive(:job_end).once
       SampleModule.client = client
       SampleModule.task_with_monitor(sample: :development) {}
@@ -63,7 +63,7 @@ describe Jobmon::RakeMonitor do
   context 'no options' do
     it 'calls #job_start and #job_end' do
       client = Jobmon::Client.new
-      expect(client).to receive(:job_start).with(anything, 3.minutes).once
+      expect(client).to receive(:job_start).with('test', 3.minutes).once
       expect(client).to receive(:job_end).once
       SampleModule.client = client
       SampleModule.task_with_monitor(:sample) {}
