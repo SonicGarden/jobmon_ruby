@@ -14,7 +14,7 @@ module Jobmon
     end
 
     def api_key
-      Jobmon.configure.monitor_api_key
+      Jobmon.configuration.monitor_api_key
     end
 
     def job_start(task, estimate_time)
@@ -28,7 +28,7 @@ module Jobmon
       response = conn.post "/api/apps/#{api_key}/jobs.json", body
       response.body['id']
     rescue => e
-      Jobmon.configure.error_handle.call(e)
+      Jobmon.configuration.error_handle.call(e)
       nil
     end
 
@@ -42,7 +42,7 @@ module Jobmon
       response = conn.put "/api/apps/#{api_key}/jobs/#{job_id}/finished.json", body
       response.body['id']
     rescue => e
-      Jobmon.configure.error_handle.call(e)
+      Jobmon.configuration.error_handle.call(e)
       nil
     end
 
@@ -56,7 +56,7 @@ module Jobmon
       response = conn.post "/api/apps/#{api_key}/queue_logs.json", body
       response.body['id']
     rescue => e
-      Jobmon.configure.error_handle.call(e)
+      Jobmon.configuration.error_handle.call(e)
       nil
     end
   end
