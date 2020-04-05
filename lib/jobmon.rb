@@ -3,7 +3,7 @@ require 'faraday'
 require 'faraday_middleware'
 require 'jobmon/version'
 require 'jobmon/client'
-require 'jobmon/railtie' if defined?(::Rails)
+require 'jobmon/railtie'
 require 'jobmon/configuration'
 
 module Jobmon
