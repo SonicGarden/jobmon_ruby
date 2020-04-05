@@ -10,7 +10,7 @@ module Jobmon
   end
 
   class Configure
-    attr_accessor :monitor_email, :monitor_api_key, :error_handle, :available_release_stagings
+    attr_accessor :monitor_api_key, :error_handle, :available_release_stagings
     def initialize
       @error_handle = -> (e) {}
       @available_release_stagings = %w[staging production]
