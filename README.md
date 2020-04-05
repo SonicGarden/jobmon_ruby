@@ -42,20 +42,19 @@ task_with_monitor job: :environment, estimate_time: 10.minutes do
 end
 ```
 
-Refinement を使うと先頭に1行足すだけでファイル内のタスクが全て監視対象となります。
+また以下のように書くと `jobmon` ブロック内の全てのタスクが監視されます。
 
 ```ruby
-using Jobmon
-
-task job: :environment do
-  puts "execute"
+jobmon estimate_time: 10.minutes do
+  task job: :environment do
+    puts "execute"
+  end
 end
 ```
 
 ## Contributing
 
 Bug reports and pull requests are welcome on GitHub at https://github.com/[USERNAME]/jobmon. This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [Contributor Covenant](http://contributor-covenant.org) code of conduct.
-
 
 ## License
 

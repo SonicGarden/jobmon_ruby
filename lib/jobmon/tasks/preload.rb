@@ -1,1 +1,1 @@
-extend Jobmon::RakeMonitor
+extend Jobmon::DSL
