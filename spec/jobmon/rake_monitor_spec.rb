@@ -7,24 +7,27 @@ describe Jobmon::RakeMonitor do
   module SampleModule
     extend Jobmon::RakeMonitor
 
-    SampleTask = Struct.new(:name)
-
     def self.client=(client)
-      @client = client
+      @__jobmon_client = client
     end
+  end
 
-    def self.task(*)
-      yield SampleTask.new('test')
-    end
+  before do
+    Rake::Task.define_task(:environment) {}
+  end
+
+  after do
+    Rake::Task.clear
   end
 
   context 'without error' do
     it 'calls #job_start and #job_end' do
       client = Jobmon::Client.new
-      expect(client).to receive(:job_start).with('test', 10.minutes).once
+      expect(client).to receive(:job_start).with('sample', 10.minutes).once
       expect(client).to receive(:job_end).once
       SampleModule.client = client
-      SampleModule.task_with_monitor(sample: :development, estimate_time: 10.minutes) {}
+      task = SampleModule.send(:task_with_monitor, sample: :environment, estimate_time: 10.minutes) {}
+      task.invoke
     end
   end
 
@@ -35,7 +38,8 @@ describe Jobmon::RakeMonitor do
       expect(client).to receive(:job_end).once
       SampleModule.client = client
       expect {
-        SampleModule.task_with_monitor(sample: :development, estimate_time: 10.minutes) { raise 'test' }
+        task = SampleModule.send(:task_with_monitor, sample: :environment, estimate_time: 10.minutes) { raise 'test' }
+        task.invoke
       }.to raise_error(RuntimeError, 'test')
     end
   end
@@ -43,30 +47,33 @@ describe Jobmon::RakeMonitor do
   context 'with args' do
     it 'calls #job_start and #job_end' do
       client = Jobmon::Client.new
-      expect(client).to receive(:job_start).with('test', 10.minutes).once
+      expect(client).to receive(:job_start).with('sample', 10.minutes).once
       expect(client).to receive(:job_end).once
       SampleModule.client = client
-      SampleModule.task_with_monitor(:sample, [:arg1, :arg2] => :development, estimate_time: 10.minutes) {}
+      task = SampleModule.send(:task_with_monitor, :sample, [:arg1, :arg2] => :environment, estimate_time: 10.minutes) {}
+      task.invoke
     end
   end
 
   context 'default estimate_time' do
     it 'calls #job_start and #job_end' do
       client = Jobmon::Client.new
-      expect(client).to receive(:job_start).with('test', 3.minutes).once
+      expect(client).to receive(:job_start).with('sample', 3.minutes).once
       expect(client).to receive(:job_end).once
       SampleModule.client = client
-      SampleModule.task_with_monitor(sample: :development) {}
+      task = SampleModule.send(:task_with_monitor, sample: :environment) {}
+      task.invoke
     end
   end
 
   context 'no options' do
     it 'calls #job_start and #job_end' do
       client = Jobmon::Client.new
-      expect(client).to receive(:job_start).with('test', 3.minutes).once
+      expect(client).to receive(:job_start).with('sample', 3.minutes).once
       expect(client).to receive(:job_end).once
       SampleModule.client = client
-      SampleModule.task_with_monitor(:sample) {}
+      task = SampleModule.send(:task_with_monitor, :sample) {}
+      task.invoke
     end
   end
 end

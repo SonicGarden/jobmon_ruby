@@ -1,2 +1,1 @@
-require 'jobmon/client'
-require 'jobmon/rake_monitor'
+extend Jobmon::RakeMonitor

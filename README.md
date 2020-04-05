@@ -36,8 +36,18 @@ bundle exec rake jobmon:test_job
 
 rake で、`task_with_monitor` を使ってタスクを記述することで、 task を監視することができます。
 
-```
+```ruby
 task_with_monitor job: :environment, estimate_time: 10.minutes do
+  puts "execute"
+end
+```
+
+Refinement を使うと先頭に1行足すだけでファイル内のタスクが全て監視対象となります。
+
+```ruby
+using Jobmon
+
+task job: :environment do
   puts "execute"
 end
 ```
