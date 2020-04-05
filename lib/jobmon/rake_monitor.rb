@@ -15,27 +15,22 @@ module Jobmon
     def task_with_monitor(*args, &block)
       args, options = resolve_args(args)
 
-      if Jobmon.available? || options[:skip_jobmon_available_check]
-        task *args do |t|
-          job_id = client.job_start(t, options[:estimate_time])
-          log(t, job_id, :started)
-          begin
-            block.call(t)
-          ensure
-            log(t, job_id, :finished)
-            client.job_end(job_id)
+      task *args do |_task, _args|
+        if Jobmon.available? || options[:skip_jobmon_available_check]
+          client.job_monitor(_task, options[:estimate_time]) do |job_id|
+            log(_task, job_id, _args, :started)
+            yield(_task, _args)
+            log(_task, job_id, _args, :finished)
           end
-        end
-      else
-        task *args do |t|
-          block.call(t)
+        else
+          yield(_task, _args)
         end
       end
     end
 
-    def log(task, job_id, type)
+    def log(task, job_id, _args, type)
       if defined?(Rails) && Rails.logger
-        Rails.logger.info "[#{task.timestamp}][JobMon][INFO] #{task.name} (job_id: #{job_id}) #{type.to_s}."
+        Rails.logger.info "[#{task.timestamp}][JobMon][INFO] #{task.name} (job_id: #{job_id}) #{type.to_s} #{_args.to_h}."
       end
     end
   end

@@ -17,6 +17,15 @@ module Jobmon
       Jobmon.configuration.monitor_api_key
     end
 
+    def job_monitor(task, estimate_time, &block)
+      job_id = job_start(task, estimate_time)
+      begin
+        yield(job_id)
+      ensure
+        job_end(job_id)
+      end
+    end
+
     def job_start(task, estimate_time)
       body = {
         job: {
