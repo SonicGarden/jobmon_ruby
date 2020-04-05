@@ -2,8 +2,8 @@ module Jobmon
   module RakeMonitor
     def resolve_args(args)
       options = args.last
-      estimate_time = options.delete(:estimate_time)
-      skip_jobmon_available_check = options.delete(:skip_jobmon_available_check)
+      estimate_time = options.delete(:estimate_time) { Jobmon.configure.estimate_time }
+      skip_jobmon_available_check = options.delete(:skip_jobmon_available_check) { false }
 
       [args, { estimate_time: estimate_time, skip_jobmon_available_check: skip_jobmon_available_check }]
     end

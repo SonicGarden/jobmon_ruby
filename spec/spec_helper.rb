@@ -9,4 +9,5 @@ end
 
 Jobmon::configure do |config|
   config.monitor_api_key = 'test_key'
+  config.error_handle = -> (e) { raise e }
 end

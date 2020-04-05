@@ -28,6 +28,18 @@ describe Jobmon::RakeMonitor do
     end
   end
 
+  context 'with error' do
+    it 'calls #job_start and #job_end and raise error' do
+      client = Jobmon::Client.new
+      expect(client).to receive(:job_start).once
+      expect(client).to receive(:job_end).once
+      SampleModule.client = client
+      expect {
+        SampleModule.task_with_monitor(sample: :development, estimate_time: 10.minutes) { raise 'test' }
+      }.to raise_error(RuntimeError, 'test')
+    end
+  end
+
   context 'with args' do
     it 'calls #job_start and #job_end' do
       client = Jobmon::Client.new
@@ -38,15 +50,13 @@ describe Jobmon::RakeMonitor do
     end
   end
 
-  context 'with error' do
-    it 'calls #job_start and #job_end and raise error' do
+  context 'default estimate_time' do
+    it 'calls #job_start and #job_end' do
       client = Jobmon::Client.new
-      expect(client).to receive(:job_start).once
+      expect(client).to receive(:job_start).with(anything, 3.minutes).once
       expect(client).to receive(:job_end).once
       SampleModule.client = client
-      expect {
-        SampleModule.task_with_monitor(sample: :development, estimate_time: 10.minutes) { raise 'test' }
-      }.to raise_error(RuntimeError, 'test')
+      SampleModule.task_with_monitor(sample: :development) {}
     end
   end
 end
