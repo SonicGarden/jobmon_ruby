@@ -1,7 +1,7 @@
 module Jobmon
   class Railtie < ::Rails::Railtie
     rake_tasks do
-      load 'jobmon/tasks/preload.rb'
+      require 'jobmon/tasks/preload'
       load 'jobmon/tasks/test.rake'
       load 'jobmon/tasks/delayed_job_queue_monitor.rake'
       load 'jobmon/tasks/sidekiq_queue_monitor.rake'
