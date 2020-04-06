@@ -12,6 +12,7 @@ class JobmonGenerator < Rails::Generators::Base
           config.error_handle = -> (e) { Bugsnag.notify(e) }
           config.available_release_stagings = %w[staging production]
           config.estimate_time = 3.minutes
+          config.logger = Rails.logger
         end
       EOF
     end

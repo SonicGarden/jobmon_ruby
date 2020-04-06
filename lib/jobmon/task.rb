@@ -22,6 +22,8 @@ module Jobmon
     end
 
     def self.log(task, job_id, args, type, &block)
+      return if Jobmon.configuration.logger.nil?
+
       Jobmon.configuration.logger.info "[#{task.timestamp}][JobMon][INFO] #{task.name} (job_id: #{job_id}, estimate_time: #{task.estimate_time}, args: #{args.to_h}) #{type} }."
     end
   end
