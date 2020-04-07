@@ -5,7 +5,7 @@ module Jobmon
     end
 
     def conn
-      @conn ||= Faraday.new(:url => host) do |faraday|
+      @conn ||= Faraday.new(url: host) do |faraday|
         faraday.request  :url_encoded
         faraday.request  :json
         faraday.response :json
@@ -14,13 +14,22 @@ module Jobmon
     end
 
     def api_key
-      Jobmon.configure.monitor_api_key
+      Jobmon.configuration.monitor_api_key
     end
 
-    def job_start(task, estimate_time)
+    def job_monitor(name, estimate_time, &block)
+      job_id = job_start(name, estimate_time)
+      begin
+        yield(job_id)
+      ensure
+        job_end(job_id)
+      end
+    end
+
+    def job_start(name, estimate_time)
       body = {
         job: {
-          name: task.name,
+          name: name,
           end_time: Time.current.since(estimate_time),
           rails_env: Rails.env,
         }
@@ -28,7 +37,7 @@ module Jobmon
       response = conn.post "/api/apps/#{api_key}/jobs.json", body
       response.body['id']
     rescue => e
-      Jobmon.configure.error_handle.call(e)
+      Jobmon.configuration.error_handle.call(e)
       nil
     end
 
@@ -42,7 +51,7 @@ module Jobmon
       response = conn.put "/api/apps/#{api_key}/jobs/#{job_id}/finished.json", body
       response.body['id']
     rescue => e
-      Jobmon.configure.error_handle.call(e)
+      Jobmon.configuration.error_handle.call(e)
       nil
     end
 
@@ -56,7 +65,7 @@ module Jobmon
       response = conn.post "/api/apps/#{api_key}/queue_logs.json", body
       response.body['id']
     rescue => e
-      Jobmon.configure.error_handle.call(e)
+      Jobmon.configuration.error_handle.call(e)
       nil
     end
   end
