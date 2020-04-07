@@ -7,7 +7,6 @@ module Jobmon
       self.available_release_stagings = %w[staging production]
       self.estimate_time = 3.minutes
       self.skip_jobmon_available_check = false
-      self.logger = Rails.logger
     end
   end
 end
