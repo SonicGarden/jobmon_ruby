@@ -48,4 +48,31 @@ describe Jobmon::CLI do
       end
     end
   end
+
+  describe '#run' do
+    let (:client) { Jobmon::Client.new }
+    let(:cli) { Jobmon::CLI.new(argv) }
+
+    before do
+      allow(cli).to receive(:client).and_return(client)
+    end
+
+    context '-t 100 -n sample echo test' do
+      let(:argv) { ['-t', '100', '-n', 'sample', 'echo', 'test'] }
+
+      it 'calls Jobmon::Client#job_monitor' do
+        expect(client).to receive(:job_monitor).with('sample', 100).once
+        cli.run
+      end
+
+      it 'calls Kernel.system' do
+        status = double('Status')
+        allow(status).to receive(:exitstatus).and_return(0)
+        allow(Process).to receive(:last_status).and_return(status)
+
+        expect(Kernel).to receive(:system).with('echo', 'test').once
+        expect(cli.run).to eq 0
+      end
+    end
+  end
 end
