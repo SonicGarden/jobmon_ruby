@@ -13,6 +13,11 @@ module Jobmon
     end
 
     def task_with_monitor(*args, &block)
+      ActiveSupport::Deprecation.warn(
+        "`task_with_monitor` is deprecated and will be removed in 0.5.0. " \
+        "Please use `jobmon` cli instead"
+      )
+
       args, options = __jobmon_resolve_args(args)
       Task::define_task(options, args, &block)
     end
@@ -20,9 +25,8 @@ module Jobmon
     def __jobmon_resolve_args(args)
       options = args.last.is_a?(Hash) ? args.last : {}
       estimate_time = options.delete(:estimate_time) { Jobmon.configuration.estimate_time }
-      skip_jobmon_available_check = options.delete(:skip_jobmon_available_check) { Jobmon.configuration.skip_jobmon_available_check }
 
-      [args, { estimate_time: estimate_time, skip_jobmon_available_check: skip_jobmon_available_check }]
+      [args, { estimate_time: estimate_time }]
     end
   end
 end

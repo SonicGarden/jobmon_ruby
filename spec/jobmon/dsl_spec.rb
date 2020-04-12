@@ -13,7 +13,7 @@ describe Jobmon::DSL do
   describe '#task_with_monitor' do
     context 'sample: :environment, estimate_time: 10.minutes' do
       it 'task定義されること' do
-        expect(Jobmon::Task).to receive(:define_task).with({ estimate_time: 10.minutes, skip_jobmon_available_check: false }, [{ sample: :environment }]).once
+        expect(Jobmon::Task).to receive(:define_task).with({ estimate_time: 10.minutes }, [{ sample: :environment }]).once
         app.instance_exec do
           task_with_monitor sample: :environment, estimate_time: 10.minutes {}
         end
@@ -22,7 +22,7 @@ describe Jobmon::DSL do
 
     context ':sample, [:arg1, :arg2] => :environment, estimate_time: 10.minutes' do
       it 'task定義されること' do
-        expect(Jobmon::Task).to receive(:define_task).with({ estimate_time: 10.minutes, skip_jobmon_available_check: false }, [:sample, { [:arg1, :arg2] => :environment }]).once
+        expect(Jobmon::Task).to receive(:define_task).with({ estimate_time: 10.minutes }, [:sample, { [:arg1, :arg2] => :environment }]).once
         app.instance_exec do
           task_with_monitor :sample, [:arg1, :arg2] => :environment, estimate_time: 10.minutes {}
         end
@@ -31,7 +31,7 @@ describe Jobmon::DSL do
 
     context ':sample, estimate_time: 10.minutes' do
       it 'task定義されること' do
-        expect(Jobmon::Task).to receive(:define_task).with({ estimate_time: 10.minutes, skip_jobmon_available_check: false }, [:sample, {}]).once
+        expect(Jobmon::Task).to receive(:define_task).with({ estimate_time: 10.minutes }, [:sample, {}]).once
         app.instance_exec do
           task_with_monitor :sample, estimate_time: 10.minutes do
           end
@@ -41,7 +41,7 @@ describe Jobmon::DSL do
 
     context ':sample' do
       it 'デフォルトオプションによりtask定義されること' do
-        expect(Jobmon::Task).to receive(:define_task).with({ estimate_time: 3.minutes, skip_jobmon_available_check: false }, [:sample]).once
+        expect(Jobmon::Task).to receive(:define_task).with({ estimate_time: 3.minutes }, [:sample]).once
         app.instance_exec do
           task_with_monitor :sample do
           end
@@ -63,7 +63,7 @@ describe Jobmon::DSL do
 
     context 'jobmon' do
       it 'デフォルトオプションによりtask定義されること' do
-        expect(Jobmon::Task).to receive(:define_task).with({ estimate_time: 3.minutes, skip_jobmon_available_check: false }, [:sample]).once
+        expect(Jobmon::Task).to receive(:define_task).with({ estimate_time: 3.minutes }, [:sample]).once
         app.instance_exec do
           jobmon do
             task :sample do
@@ -75,8 +75,8 @@ describe Jobmon::DSL do
 
     context 'jobmon estimate_time: 10.minutes' do
       it '指定オプションによりtask定義されること' do
-        expect(Jobmon::Task).to receive(:define_task).with({ estimate_time: 10.minutes, skip_jobmon_available_check: false }, [:sample]).once
-        expect(Jobmon::Task).to receive(:define_task).with({ estimate_time: 10.minutes, skip_jobmon_available_check: false }, [:hoge]).once
+        expect(Jobmon::Task).to receive(:define_task).with({ estimate_time: 10.minutes }, [:sample]).once
+        expect(Jobmon::Task).to receive(:define_task).with({ estimate_time: 10.minutes }, [:hoge]).once
         app.instance_exec do
           jobmon estimate_time: 10.minutes do
             task :sample do

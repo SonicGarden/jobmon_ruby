@@ -5,10 +5,7 @@ module Jobmon
     include ::Rake::DSL
 
     def task(*args, &block)
-      options = {
-        estimate_time: Jobmon.configuration.estimate_time,
-        skip_jobmon_available_check: Jobmon.configuration.skip_jobmon_available_check,
-      }
+      options = { estimate_time: Jobmon.configuration.estimate_time }
       Task::define_task(options, args, &block)
     end
   end

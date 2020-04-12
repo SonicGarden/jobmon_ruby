@@ -1,0 +1,8 @@
+#!/usr/bin/env ruby
+
+require 'jobmon/cli'
+
+require File.expand_path(File.join('config', 'environment'))
+
+status = Jobmon::CLI.run(ARGV)
+Kernel.exit(status) if status.positive?

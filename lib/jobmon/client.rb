@@ -20,9 +20,10 @@ module Jobmon
     def job_monitor(name, estimate_time, &block)
       job_id = job_start(name, estimate_time)
       begin
-        yield(job_id)
+        result = yield(job_id)
       ensure
         job_end(job_id)
+        result
       end
     end
 
