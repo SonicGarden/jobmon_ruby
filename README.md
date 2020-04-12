@@ -28,21 +28,19 @@ bin/rails g jobmon
 
 作成された`config/initializers/jobmon.rb`に監視するアプリケーションの`api_key`を設定します。
 
-以下の確認用の task で https://job-mon.sg-apps.com のアプリケーション上で Jobs が登録されることを確認してください。
+以下の確認用のコマンドで https://job-mon.sg-apps.com のアプリケーション上で Jobs が登録されることを確認してください。
 
 ```
-bundle exec rake jobmon:test_job
+bundle exec jobmon --name test_job echo test
 ```
 
-rake で、`task_with_monitor` を使ってタスクを記述することで、 task を監視することができます。
+`jobmon` コマンド経由でタスクを実行することで、 task を監視することができます。
 
-```ruby
-task_with_monitor job: :environment, estimate_time: 10.minutes do
-  puts "execute"
-end
+```
+jobmon --estimate-time 600 --name job bin/rake job
 ```
 
-また以下のように書くと `jobmon` ブロック内の全てのタスクが監視されます。
+また以下のように書くと `jobmon` ブロック内の全てのタスクが監視されます。（非推奨）
 
 ```ruby
 jobmon estimate_time: 10.minutes do

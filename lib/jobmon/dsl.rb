@@ -13,6 +13,11 @@ module Jobmon
     end
 
     def task_with_monitor(*args, &block)
+      ActiveSupport::Deprecation.warn(
+        "`task_with_monitor` is deprecated and will be removed in 0.5.0. " \
+        "Please use `jobmon` cli instead"
+      )
+
       args, options = __jobmon_resolve_args(args)
       Task::define_task(options, args, &block)
     end
