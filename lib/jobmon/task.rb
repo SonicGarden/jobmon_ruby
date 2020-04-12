@@ -1,7 +1,7 @@
 module Jobmon
   class Task
     def self.define_task(options, args, &block)
-      if Jobmon.available? || options[:skip_jobmon_available_check]
+      if Jobmon.available?
         task = Rake::Task.define_task(*args) do |_task, _args|
           client.job_monitor(_task.name, _task.estimate_time) do |job_id|
             log(_task, job_id, _args, :started)
