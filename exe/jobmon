@@ -25,6 +25,7 @@ cmd_index = ARGV.index.with_index do |v, i|
     !prev.start_with?('-') || prev.include?('=')
   end
 end
+cmd_index = ARGV.size - 1 if cmd_index.nil?
 
 jobmon_options = ARGV.slice(0..cmd_index)
 argv = ARGV.slice(cmd_index..-1)
