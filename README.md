@@ -40,7 +40,25 @@ bundle exec jobmon --name test_job echo test
 jobmon --estimate-time 600 --name job bin/rake job
 ```
 
-また以下のように書くと `jobmon` ブロック内の全てのタスクが監視されます。（非推奨）
+In `config/schedule.rb`:
+
+```ruby
+set :path, File.realpath('../', __dir__)
+set :output, "#{path}/log/batch.log"
+set :estimate_time, 180
+
+job_type :jobmon, 'cd :path && bundle exec jobmon --name :task --estimate-time :estimate_time bin/rake :task :output'
+
+every 10.minutes do
+  jobmon 'cron:hoge_task'
+end
+
+every 1.day, at: '00:00' do
+  jobmon 'cron:heavy_task', estimate_time: 600
+end
+```
+
+また以下のようにタスク定義すると `jobmon` ブロック内の全てのタスクが監視されます。（非推奨）
 
 ```ruby
 jobmon estimate_time: 10.minutes do
