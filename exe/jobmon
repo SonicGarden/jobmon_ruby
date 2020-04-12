@@ -1,35 +1,8 @@
 #!/usr/bin/env ruby
 
-require 'optparse'
 require 'jobmon/cli'
 
 require File.expand_path(File.join('config', 'environment'))
 
-options = {}
-
-opt = OptionParser.new do |opts|
-  opts.banner = "Usage: jobmon [options] command"
-  opts.on('-t', '--estimate-time [time]') do |time|
-    options[:estimate_time] = time.to_i if time
-  end
-  opts.on('-n', '--name [name]') do |name|
-    options[:name] = name if name
-  end
-end
-
-cmd_index = ARGV.index.with_index do |v, i|
-  if v.start_with?('-')
-    false
-  else
-    prev = ARGV[i - 1]
-    !prev.start_with?('-') || prev.include?('=')
-  end
-end
-cmd_index = ARGV.size - 1 if cmd_index.nil?
-
-jobmon_options = ARGV.slice(0..cmd_index)
-argv = ARGV.slice(cmd_index..-1)
-opt.parse!(jobmon_options)
-
-status = Jobmon::CLI.run(argv, options)
+status = Jobmon::CLI.run(ARGV)
 Kernel.exit(status) if status.positive?
