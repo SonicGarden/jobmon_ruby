@@ -1,4 +1,5 @@
 require 'optparse'
+require 'rake'
 require 'jobmon/client'
 
 module Jobmon
@@ -16,6 +17,16 @@ module Jobmon
     end
 
     def run
+      options[:task].present? ? run_task(options[:task]) : run_command
+    end
+
+    private
+
+    def client
+      Jobmon::Client.new
+    end
+
+    def run_command
       raise 'Command is empty.' if cmd.empty?
 
       client.job_monitor(name, estimate_time) do
@@ -24,10 +35,13 @@ module Jobmon
       end
     end
 
-    private
+    def run_task(task)
+      Rake.application.load_rakefile
 
-    def client
-      Jobmon::Client.new
+      client.job_monitor(task, estimate_time) do
+        Rake::Task[task].invoke
+      end
+      0
     end
 
     def name
@@ -57,11 +71,14 @@ module Jobmon
     def opt
       OptionParser.new do |opts|
         opts.banner = "Usage: jobmon [options] command"
-        opts.on('-t', '--estimate-time [time]') do |time|
+        opts.on('-e', '--estimate-time [time]') do |time|
           @options[:estimate_time] = time.to_i if time
         end
         opts.on('-n', '--name [name]') do |name|
           @options[:name] = name if name
+        end
+        opts.on('-t', '--task [task]') do |task|
+          @options[:task] = task if task
         end
       end
     end

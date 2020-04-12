@@ -34,10 +34,11 @@ bin/rails g jobmon
 bundle exec jobmon --name test_job echo test
 ```
 
-`jobmon` コマンド経由でタスクを実行することで、 task を監視することができます。
+`jobmon` コマンド経由でタスクやコマンドを実行することで監視することができます。
 
 ```
-jobmon --estimate-time 600 --name job bin/rake job
+jobmon --estimate-time 600 --task cron:sample_task
+jobmon --estimate-time 600 --name sample bin/rails runner scripts/sample.rb
 ```
 
 In `config/schedule.rb`:
@@ -47,7 +48,7 @@ set :path, File.realpath('../', __dir__)
 set :output, "#{path}/log/batch.log"
 set :estimate_time, 180
 
-job_type :jobmon, 'cd :path && bundle exec jobmon --name :task --estimate-time :estimate_time bin/rake :task :output'
+job_type :jobmon, 'cd :path && bundle exec jobmon --task :task --estimate-time :estimate_time :output'
 
 every 10.minutes do
   jobmon 'cron:hoge_task'
