@@ -87,9 +87,28 @@ describe Jobmon::CLI do
         cli.run
       end
 
-      it 'calls Rake::Task#execute' do
+      it 'calls Rake::Task#invoke' do
         task = Rake::Task.define_task(:sample) {}
-        expect(task).to receive(:execute).once
+        expect(task).to receive(:invoke).once
+        expect(cli.run).to eq 0
+      end
+    end
+
+    context '--estimate-time 100 --task sample[arg1,arg2]' do
+      let(:argv) { ['--estimate-time', '100', '--task', 'sample[arg1,arg2]'] }
+
+      after do
+        Rake::Task.clear
+      end
+
+      it 'calls Jobmon::Client#job_monitor' do
+        expect(client).to receive(:job_monitor).with('sample', 100).once
+        cli.run
+      end
+
+      it 'calls Rake::Task#invoke' do
+        task = Rake::Task.define_task(:sample) {}
+        expect(task).to receive(:invoke).with('arg1', 'arg2').once
         expect(cli.run).to eq 0
       end
     end

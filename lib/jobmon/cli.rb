@@ -35,11 +35,12 @@ module Jobmon
       end
     end
 
-    def run_task(task)
+    def run_task(string)
       Rake.application.load_rakefile
+      task, args = Rake.application.parse_task_string(string)
 
       client.job_monitor(task, estimate_time) do
-        Rake::Task[task].invoke
+        Rake::Task[task].invoke(*args)
       end
       0
     end
