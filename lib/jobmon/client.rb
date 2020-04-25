@@ -29,6 +29,7 @@ module Jobmon
           name: name,
           end_time: Time.current.since(estimate_time),
           rails_env: Rails.env,
+          hostname: Jobmon.configuration.hostname,
         }
       }
       response = conn.post "/api/apps/#{api_key}/jobs.json", body

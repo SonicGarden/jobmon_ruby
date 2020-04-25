@@ -52,8 +52,17 @@ describe Jobmon::Client do
   end
 
   describe '#job_start' do
+    before do
+      Jobmon.configure do |config|
+        config.hostname = 'dummyhost'
+      end
+    end
+
     it do
       stubs.post('/api/apps/test_key/jobs.json') do |env|
+        params = JSON.parse(env.request_body)
+        expect(params['job']['hostname']).to eq 'dummyhost'
+
         [
           200,
           { 'Content-Type': 'application/json' },
