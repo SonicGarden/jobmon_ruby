@@ -1,12 +1,5 @@
-module Jobmon
-  class Client
-    def host
-      'http://job-mon.dev'
-    end
-  end
-end
-
 Jobmon.configure do |config|
+  config.endpoint = 'http://job-mon.test'
   config.monitor_api_key = "xxxxx-xxxx-xxxx-xxxx-xxxxxxxxx"
   config.error_handle    = -> (e) { raise e }
 end
