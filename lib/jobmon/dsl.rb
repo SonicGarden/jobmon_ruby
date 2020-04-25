@@ -7,6 +7,11 @@ module Jobmon
     private
 
     def jobmon(options = {}, &block)
+      ActiveSupport::Deprecation.warn(
+        "`jobmon` DSL is deprecated and will be removed in 0.5.0. " \
+        "Please use `jobmon` cli instead"
+      )
+
       Jobmon.with_options(options) do
         TaskMonitor.new.instance_exec(&block)
       end
@@ -14,7 +19,7 @@ module Jobmon
 
     def task_with_monitor(*args, &block)
       ActiveSupport::Deprecation.warn(
-        "`task_with_monitor` is deprecated and will be removed in 0.5.0. " \
+        "`task_with_monitor` DSL is deprecated and will be removed in 0.5.0. " \
         "Please use `jobmon` cli instead"
       )
 

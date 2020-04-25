@@ -2,6 +2,7 @@
 
 - `endpoint` オプション追加
 - `hostname` オプション追加
+- `jobmon` DSL を非推奨に
 
 ## 0.4.1
 
