@@ -3,6 +3,7 @@
 - `endpoint` オプション追加
 - `hostname` オプション追加
 - `jobmon` DSL を非推奨に
+- rakeタスクの環境変数引数に対応
 
 ## 0.4.1
 

@@ -19,7 +19,7 @@ describe Jobmon::CLI do
           estimate_time: 100,
           name: 'hoge',
         })
-        expect(cli.cmd).to eq ['echo', '-n', 'test']
+        expect(cli.cmd_argv).to eq ['echo', '-n', 'test']
       end
     end
 
@@ -32,7 +32,7 @@ describe Jobmon::CLI do
           estimate_time: 100,
           name: 'hoge',
         })
-        expect(cli.cmd).to eq ['echo', '-n', 'test']
+        expect(cli.cmd_argv).to eq ['echo', '-n', 'test']
       end
     end
 
@@ -44,7 +44,7 @@ describe Jobmon::CLI do
           estimate_time: 100,
           name: 'hoge',
         })
-        expect(cli.cmd).to eq ['echo', '-n', 'test']
+        expect(cli.cmd_argv).to eq ['echo', '-n', 'test']
       end
     end
   end
@@ -89,7 +89,7 @@ describe Jobmon::CLI do
 
       it 'calls Rake::Task#invoke' do
         task = Rake::Task.define_task(:sample) {}
-        expect(task).to receive(:invoke).once
+        expect(task).to receive(:execute).once
         expect(cli.run).to eq 0
       end
     end
@@ -107,9 +107,43 @@ describe Jobmon::CLI do
       end
 
       it 'calls Rake::Task#invoke' do
-        task = Rake::Task.define_task(:sample) {}
-        expect(task).to receive(:invoke).with('arg1', 'arg2').once
+        foo = nil
+        bar = nil
+        Rake::Task.define_task(:environment) {}
+        task = Rake::Task.define_task(:sample, [:foo, :bar] => :environment) do |_ ,args|
+          foo = args[:foo]
+          bar = args[:bar]
+        end
+
         expect(cli.run).to eq 0
+        expect(foo).to eq 'arg1'
+        expect(bar).to eq 'arg2'
+      end
+    end
+
+    context '--estimate-time 100 --task sample foo=1 bar=2' do
+      let(:argv) { ['--estimate-time', '100', '--task', 'sample', 'foo=1', 'bar=2'] }
+
+      after do
+        Rake::Task.clear
+      end
+
+      it 'calls Jobmon::Client#job_monitor' do
+        expect(client).to receive(:job_monitor).with('sample', 100).once
+        cli.run
+      end
+
+      it '環境変数がセットされること' do
+        foo = nil
+        bar = nil
+        task = Rake::Task.define_task(:sample) do
+          foo = ENV['foo']
+          bar = ENV['bar']
+        end
+
+        expect(cli.run).to eq 0
+        expect(foo).to eq '1'
+        expect(bar).to eq '2'
       end
     end
   end
