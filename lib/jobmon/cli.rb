@@ -4,15 +4,15 @@ require 'jobmon/client'
 
 module Jobmon
   class CLI
-    attr_reader :options, :cmd
+    attr_reader :options, :cmd_argv
 
-    def self.run(argv)
+    def self.run(argv = ARGV)
       self.new(argv).run
     end
 
     def initialize(argv)
       @options = {}
-      @cmd = []
+      @cmd_argv = []
       parse_argv(argv)
     end
 
@@ -27,26 +27,24 @@ module Jobmon
     end
 
     def run_command
-      raise 'Command is empty.' if cmd.empty?
+      raise 'Command is empty.' if cmd_argv.empty?
+      name = options.fetch(:name) { cmd_argv[0] }
 
       client.job_monitor(name, estimate_time) do
-        Kernel.system(*cmd)
+        Kernel.system(*cmd_argv)
         Process.last_status.exitstatus
       end
     end
 
-    def run_task(string)
-      Rake.application.load_rakefile
-      task, args = Rake.application.parse_task_string(string)
+    def run_task(task_string)
+      task, _ = Rake.application.parse_task_string(task_string)
+      name = options.fetch(:name) { task }
 
-      client.job_monitor(task, estimate_time) do
-        Rake::Task[task].invoke(*args)
+      client.job_monitor(name, estimate_time) do
+        argv = [task_string, *cmd_argv]
+        Rake.application.run(argv)
       end
       0
-    end
-
-    def name
-      options.fetch(:name) { cmd[0] }
     end
 
     def estimate_time
@@ -65,7 +63,7 @@ module Jobmon
       cmd_index = argv.size - 1 if cmd_index.nil?
 
       jobmon_options = argv.slice(0..cmd_index)
-      @cmd = argv.slice(cmd_index..-1)
+      @cmd_argv = argv.slice(cmd_index..-1)
       opt.parse!(jobmon_options)
     end
 

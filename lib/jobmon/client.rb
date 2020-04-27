@@ -1,11 +1,7 @@
 module Jobmon
   class Client
-    def host
-      'https://job-mon.sg-apps.com'
-    end
-
     def conn
-      @conn ||= Faraday.new(url: host) do |faraday|
+      @conn ||= Faraday.new(url: Jobmon.configuration.endpoint) do |faraday|
         faraday.request  :url_encoded
         faraday.request  :json
         faraday.response :json
@@ -33,6 +29,7 @@ module Jobmon
           name: name,
           end_time: Time.current.since(estimate_time),
           rails_env: Rails.env,
+          hostname: Jobmon.configuration.hostname,
         }
       }
       response = conn.post "/api/apps/#{api_key}/jobs.json", body
