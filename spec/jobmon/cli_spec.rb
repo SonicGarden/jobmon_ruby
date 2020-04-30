@@ -23,6 +23,18 @@ describe Jobmon::CLI do
       end
     end
 
+    context '--task hoge --estimate-time 100' do
+      let(:argv) { ['--task', 'hoge', '--estimate-time', '100'] }
+
+      it do
+        expect(cli.options).to eq({
+          estimate_time: 100,
+          task: 'hoge',
+        })
+        expect(cli.cmd_argv).to eq []
+      end
+    end
+
     context '--estimate-time=100 --name=hoge echo -n test' do
       let(:argv) { ['--estimate-time=100', '--name=hoge', 'echo', '-n', 'test'] }
 

@@ -1,3 +1,7 @@
+## 0.4.3
+
+- Fix parse argv
+
 ## 0.4.2
 
 - `endpoint` オプション追加

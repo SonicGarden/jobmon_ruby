@@ -60,10 +60,10 @@ module Jobmon
           !prev.start_with?('-') || prev.include?('=')
         end
       end
-      cmd_index = argv.size - 1 if cmd_index.nil?
 
-      jobmon_options = argv.slice(0..cmd_index)
-      @cmd_argv = argv.slice(cmd_index..-1)
+      jobmon_options = cmd_index ? argv.slice(0..cmd_index) : argv
+      @cmd_argv = cmd_index ? argv.slice(cmd_index..-1) : []
+
       opt.parse!(jobmon_options)
     end
 
