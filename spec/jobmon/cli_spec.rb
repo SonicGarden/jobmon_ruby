@@ -11,40 +11,39 @@ describe Jobmon::CLI do
       end
     end
 
-    context '--estimate-time 100 --name hoge echo -n test' do
-      let(:argv) { ['--estimate-time', '100', '--name', 'hoge', 'echo', '-n', 'test'] }
+    context '--estimate-time 100 --name hoge --cmd "echo -n test"' do
+      let(:argv) { ['--estimate-time', '100', '--name', 'hoge', '--cmd', 'echo -n test'] }
 
       it do
         expect(cli.options).to eq({
           estimate_time: 100,
           name: 'hoge',
+          cmd: 'echo -n test',
         })
-        expect(cli.cmd_argv).to eq ['echo', '-n', 'test']
       end
     end
 
-    context '--estimate-time=100 --name=hoge echo -n test' do
-      let(:argv) { ['--estimate-time=100', '--name=hoge', 'echo', '-n', 'test'] }
-
+    context '--task hoge --estimate-time 100' do
+      let(:argv) { ['--task', 'hoge', '--estimate-time', '100'] }
 
       it do
         expect(cli.options).to eq({
           estimate_time: 100,
-          name: 'hoge',
         })
-        expect(cli.cmd_argv).to eq ['echo', '-n', 'test']
+        expect(cli.task_argv).to eq ['hoge']
       end
     end
 
-    context '-e 100 -n hoge echo -n test' do
-      let(:argv) { ['-e', '100', '-n', 'hoge', 'echo', '-n', 'test'] }
+    context '--estimate-time=100 --name=hoge hoge:task' do
+      let(:argv) { ['--estimate-time=100', '--name=hoge', 'hoge:task'] }
+
 
       it do
         expect(cli.options).to eq({
           estimate_time: 100,
           name: 'hoge',
         })
-        expect(cli.cmd_argv).to eq ['echo', '-n', 'test']
+        expect(cli.task_argv).to eq ['hoge:task']
       end
     end
   end
@@ -57,8 +56,8 @@ describe Jobmon::CLI do
       allow(cli).to receive(:client).and_return(client)
     end
 
-    context '-e 100 -n sample echo test' do
-      let(:argv) { ['-e', '100', '-n', 'sample', 'echo', 'test'] }
+    context '-e 100 -n sample -c "echo test"' do
+      let(:argv) { ['-e', '100', '-n', 'sample', '-c', 'echo test'] }
 
       it 'calls Jobmon::Client#job_monitor' do
         expect(client).to receive(:job_monitor).with('sample', 100).once
@@ -70,7 +69,7 @@ describe Jobmon::CLI do
         allow(status).to receive(:exitstatus).and_return(0)
         allow(Process).to receive(:last_status).and_return(status)
 
-        expect(Kernel).to receive(:system).with('echo', 'test').once
+        expect(Kernel).to receive(:system).with('echo test').once
         expect(cli.run).to eq 0
       end
     end
@@ -94,8 +93,8 @@ describe Jobmon::CLI do
       end
     end
 
-    context '--estimate-time 100 --task sample[arg1,arg2]' do
-      let(:argv) { ['--estimate-time', '100', '--task', 'sample[arg1,arg2]'] }
+    context '--estimate-time 100 sample[arg1,arg2]' do
+      let(:argv) { ['--estimate-time', '100', 'sample[arg1,arg2]'] }
 
       after do
         Rake::Task.clear
@@ -121,8 +120,8 @@ describe Jobmon::CLI do
       end
     end
 
-    context '--estimate-time 100 --task sample foo=1 bar=2' do
-      let(:argv) { ['--estimate-time', '100', '--task', 'sample', 'foo=1', 'bar=2'] }
+    context '--estimate-time 100 sample foo=1 bar=2' do
+      let(:argv) { ['--estimate-time', '100', 'sample', 'foo=1', 'bar=2'] }
 
       after do
         Rake::Task.clear
