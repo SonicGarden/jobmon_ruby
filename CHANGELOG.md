@@ -1,13 +1,14 @@
 ## 0.4.3
 
-- Fix parse argv
+- `jobmon` コマンドの `--task` オプションを非推奨に
+- `jobmon` コマンドに `--cmd` オプションを追加
 
 ## 0.4.2
 
 - `endpoint` オプション追加
 - `hostname` オプション追加
 - `jobmon` DSL を非推奨に
-- rakeタスクの環境変数引数に対応
+- rake タスクの環境変数引数に対応
 
 ## 0.4.1
 
