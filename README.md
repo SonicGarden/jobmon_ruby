@@ -31,14 +31,14 @@ bin/rails g jobmon
 以下の確認用のコマンドで https://job-mon.sg-apps.com のアプリケーション上で Jobs が登録されることを確認してください。
 
 ```
-bundle exec jobmon --name test_job echo test
+bundle exec jobmon --name test_job --cmd "echo test"
 ```
 
 `jobmon` コマンド経由でタスクやコマンドを実行することで監視することができます。
 
 ```
-jobmon --estimate-time 600 --task cron:sample_task
-jobmon --estimate-time 600 --name sample bin/rails runner scripts/sample.rb
+jobmon --estimate-time 600 cron:sample_task
+jobmon --estimate-time 600 --name sample --cmd "bin/rails runner scripts/sample.rb"
 ```
 
 In `config/schedule.rb`:
@@ -48,7 +48,7 @@ set :path, File.realpath('../', __dir__)
 set :output, "#{path}/log/batch.log"
 set :estimate_time, 180
 
-job_type :jobmon, 'cd :path && bundle exec jobmon --task :task --estimate-time :estimate_time :output'
+job_type :jobmon, 'cd :path && bundle exec jobmon --estimate-time :estimate_time :task  :output'
 
 every 10.minutes do
   jobmon 'cron:hoge_task'
