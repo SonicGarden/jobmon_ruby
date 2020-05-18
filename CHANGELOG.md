@@ -1,6 +1,6 @@
 ## 0.4.4
 
-- 接続エラー時には`Jobmon::ConnectionError`を投げるように
+- 接続エラー時には`Jobmon::RequestError`を投げるように
 
 ## 0.4.3
 

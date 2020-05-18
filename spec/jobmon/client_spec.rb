@@ -20,7 +20,7 @@ describe Jobmon::Client do
     before do
       Jobmon.configure do |config|
         config.error_handle = -> (e) do
-          expect(e).to be_a Jobmon::ConnectionError
+          expect(e).to be_a Jobmon::RequestError
           expect(e.message).to eq 'test error'
         end
       end

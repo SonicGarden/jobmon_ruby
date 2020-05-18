@@ -1,5 +1,5 @@
 module Jobmon
-  class ConnectionError < StandardError
+  class RequestError < StandardError
     attr_reader :original
 
     def initialize(error)

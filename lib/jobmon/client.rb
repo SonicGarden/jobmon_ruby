@@ -37,7 +37,7 @@ module Jobmon
       response = conn.post "/api/apps/#{api_key}/jobs.json", body
       response.body['id']
     rescue => e
-      Jobmon.configuration.error_handle.call(Jobmon::ConnectionError.new(e))
+      Jobmon.configuration.error_handle.call(Jobmon::RequestError.new(e))
       nil
     end
 
@@ -51,7 +51,7 @@ module Jobmon
       response = conn.put "/api/apps/#{api_key}/jobs/#{job_id}/finished.json", body
       response.body['id']
     rescue => e
-      Jobmon.configuration.error_handle.call(Jobmon::ConnectionError.new(e))
+      Jobmon.configuration.error_handle.call(Jobmon::RequestError.new(e))
       nil
     end
 
@@ -65,7 +65,7 @@ module Jobmon
       response = conn.post "/api/apps/#{api_key}/queue_logs.json", body
       response.body['id']
     rescue => e
-      Jobmon.configuration.error_handle.call(Jobmon::ConnectionError.new(e))
+      Jobmon.configuration.error_handle.call(Jobmon::RequestError.new(e))
       nil
     end
   end
