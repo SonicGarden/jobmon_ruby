@@ -17,14 +17,25 @@ describe Jobmon::Client do
   end
 
   describe '#job_monitor' do
-    Jobmon.configure do |config|
-      config.error_handle = -> (e) {}
+    before do
+      Jobmon.configure do |config|
+        config.error_handle = -> (e) do
+          expect(e).to be_a Jobmon::RequestError
+          expect(e.message).to eq 'test error'
+        end
+      end
+    end
+
+    after do
+      Jobmon.configure do |config|
+        config.error_handle = -> (e) {}
+      end
     end
 
     context '開始時に接続エラー' do
       it 'jobmon接続時にエラー発生してもブロックは実行されること' do
         stubs.post('/api/apps/test_key/jobs.json') do
-          raise Faraday::ConnectionFailed, nil
+          raise Faraday::ConnectionFailed, 'test error'
         end
 
         expect { |b| job_mon.job_monitor('task', 10, &b) }.to yield_control
@@ -42,7 +53,7 @@ describe Jobmon::Client do
           ]
         end
         stubs.put('/api/apps/test_key/jobs/333/finished.json') do |env|
-          raise Faraday::ConnectionFailed, nil
+          raise Faraday::ConnectionFailed, 'test error'
         end
 
         expect { |b| job_mon.job_monitor('task', 10, &b) }.to yield_control
