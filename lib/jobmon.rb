@@ -6,7 +6,6 @@ require 'jobmon/version'
 require 'jobmon/client'
 require 'jobmon/railtie'
 require 'jobmon/configuration'
-require 'jobmon/dsl'
 
 module Jobmon
   class << self

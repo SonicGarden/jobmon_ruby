@@ -23,17 +23,6 @@ describe Jobmon::CLI do
       end
     end
 
-    context '--task hoge --estimate-time 100' do
-      let(:argv) { ['--task', 'hoge', '--estimate-time', '100'] }
-
-      it do
-        expect(cli.options).to eq({
-          estimate_time: 100,
-        })
-        expect(cli.task_argv).to eq ['hoge']
-      end
-    end
-
     context '--estimate-time=100 --name=hoge hoge:task' do
       let(:argv) { ['--estimate-time=100', '--name=hoge', 'hoge:task'] }
 
@@ -70,25 +59,6 @@ describe Jobmon::CLI do
         allow(Process).to receive(:last_status).and_return(status)
 
         expect(Kernel).to receive(:system).with('echo test').once
-        expect(cli.run).to eq 0
-      end
-    end
-
-    context '--estimate-time 100 --task sample' do
-      let(:argv) { ['--estimate-time', '100', '--task', 'sample'] }
-
-      after do
-        Rake::Task.clear
-      end
-
-      it 'calls Jobmon::Client#job_monitor' do
-        expect(client).to receive(:job_monitor).with('sample', 100).once
-        cli.run
-      end
-
-      it 'calls Rake::Task#invoke' do
-        task = Rake::Task.define_task(:sample) {}
-        expect(task).to receive(:execute).once
         expect(cli.run).to eq 0
       end
     end
