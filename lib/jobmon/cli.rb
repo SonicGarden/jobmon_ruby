@@ -64,7 +64,7 @@ module Jobmon
           @options[:name] = name if name
         end
         opts.on('-t', '--task [task]') do |task|
-          raise ArgumentError, "`--task` option is deprecated and will be removed in 0.5.0. "
+          raise ArgumentError, "`--task` option is removed"
         end
         opts.on('-c', '--cmd [cmd]') do |cmd|
           @options[:cmd] = cmd if cmd
