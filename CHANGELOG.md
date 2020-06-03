@@ -1,3 +1,9 @@
+## 0.5.0
+
+- `jobmon` DSL を削除
+- `jobmon` コマンドの `--task` オプションを削除
+- `task_with_monitor` DSL を削除
+
 ## 0.4.4
 
 - 接続エラー時には`Jobmon::RequestError`を投げるように

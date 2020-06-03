@@ -59,16 +59,6 @@ every 1.day, at: '00:00' do
 end
 ```
 
-また以下のようにタスク定義すると `jobmon` ブロック内の全てのタスクが監視されます。（非推奨）
-
-```ruby
-jobmon estimate_time: 10.minutes do
-  task job: :environment do
-    puts "execute"
-  end
-end
-```
-
 ## Contributing
 
 Bug reports and pull requests are welcome on GitHub at https://github.com/[USERNAME]/jobmon. This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [Contributor Covenant](http://contributor-covenant.org) code of conduct.
