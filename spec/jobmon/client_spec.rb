@@ -86,7 +86,11 @@ describe Jobmon::Client do
   end
 
   describe '#job_end' do
-    it do
+    before do
+      allow(Jobmon.configuration.error_handle).to receive(:call)
+    end
+
+    it 'エラーハンドラが呼ばれないこと' do
       stubs.put('/api/apps/test_key/jobs/333/finished.json') do |env|
         expect(env.request_body).to eq "{\"job\":{\"rails_env\":\"development\"}}"
         [
@@ -95,7 +99,8 @@ describe Jobmon::Client do
           '{"id": 333}'
         ]
       end
-      expect(job_mon.job_end(333)).to eq 333
+      job_mon.job_end(333)
+      expect(Jobmon.configuration.error_handle).not_to have_received(:call)
     end
   end
 
