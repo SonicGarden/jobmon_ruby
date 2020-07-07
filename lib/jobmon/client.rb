@@ -1,3 +1,4 @@
+require 'retryable'
 require 'jobmon/errors'
 
 module Jobmon
@@ -34,8 +35,10 @@ module Jobmon
           hostname: Jobmon.configuration.hostname,
         }
       }
-      response = conn.post "/api/apps/#{api_key}/jobs.json", body
-      response.body['id']
+      Retryable.retryable(tries: 3) do
+        response = conn.post "/api/apps/#{api_key}/jobs.json", body
+        response.body['id']
+      end
     rescue => e
       Jobmon.configuration.error_handle.call(Jobmon::RequestError.new(e))
       nil
@@ -48,8 +51,9 @@ module Jobmon
           rails_env: Rails.env,
         }
       }
-      response = conn.put "/api/apps/#{api_key}/jobs/#{job_id}/finished.json", body
-      response.body['id']
+      Retryable.retryable(tries: 3) do
+        conn.put "/api/apps/#{api_key}/jobs/#{job_id}/finished.json", body
+      end
     rescue => e
       Jobmon.configuration.error_handle.call(Jobmon::RequestError.new(e))
       nil

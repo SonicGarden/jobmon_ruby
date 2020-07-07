@@ -24,6 +24,7 @@ Gem::Specification.new do |spec|
   spec.add_dependency 'rails'
   spec.add_dependency 'faraday'
   spec.add_dependency 'faraday_middleware'
+  spec.add_dependency "retryable"
   spec.add_dependency 'rake', '>= 12.2.0'
 
   spec.add_development_dependency "bundler", "~> 2.0"
