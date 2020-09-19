@@ -4,7 +4,7 @@ require 'faraday'
 require 'faraday_middleware'
 require 'jobmon/version'
 require 'jobmon/client'
-require 'jobmon/railtie'
+require 'jobmon/engine'
 require 'jobmon/configuration'
 
 module Jobmon
