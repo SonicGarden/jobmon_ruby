@@ -10,6 +10,7 @@ module Jobmon
       self.available_release_stagings = %w[staging production]
       self.estimate_time = 3.minutes
       self.hostname = Socket.gethostname
+      self.logger = Rails.logger
     end
   end
 end
