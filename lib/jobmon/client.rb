@@ -84,7 +84,7 @@ module Jobmon
 
     def logging(text, level: :info)
       log_text = "[Jobmon] #{text}"
-      logger&.send(level, log_text)
+      logger&.public_send(level, log_text)
     end
 
     def logger
