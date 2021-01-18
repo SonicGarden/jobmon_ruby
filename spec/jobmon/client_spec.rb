@@ -115,7 +115,7 @@ describe Jobmon::Client do
     end
 
     context '正常に実行および送信できたとき' do
-      it do
+      it 'タスクが実行されサーバへ開始、終了通知が送信される' do
         stubs.post('/api/apps/test_key/jobs.json') do |env|
           [
             200,
