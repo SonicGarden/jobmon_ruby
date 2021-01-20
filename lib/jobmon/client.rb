@@ -17,12 +17,16 @@ module Jobmon
     end
 
     def job_monitor(name, estimate_time, &block)
-      job_id = job_start(name, estimate_time)
       begin
-        result = yield(job_id)
-      ensure
-        job_end(job_id)
+        job_id = job_start(name, estimate_time)
+        logging("Start job #{name}")
+        result = block.call(job_id)
+        logging("End job #{name}")
+        job_end(name, job_id)
         result
+      rescue Exception
+        logging("Failed job #{name}", level: :warn)
+        job_end(name, job_id)
       end
     end
 
@@ -40,11 +44,12 @@ module Jobmon
         response.body['id']
       end
     rescue => e
+      logging("Failed to send job_start #{name}", level: :warn)
       Jobmon.configuration.error_handle.call(Jobmon::RequestError.new(e))
       nil
     end
 
-    def job_end(job_id)
+    def job_end(name, job_id)
       return unless job_id
       body = {
         job: {
@@ -55,6 +60,7 @@ module Jobmon
         conn.put "/api/apps/#{api_key}/jobs/#{job_id}/finished.json", body
       end
     rescue => e
+      logging("Failed to send job_end #{name}", level: :warn)
       Jobmon.configuration.error_handle.call(Jobmon::RequestError.new(e))
       nil
     end
@@ -69,8 +75,20 @@ module Jobmon
       response = conn.post "/api/apps/#{api_key}/queue_logs.json", body
       response.body['id']
     rescue => e
+      logging("Failed to send send_queue_log", level: :warn)
       Jobmon.configuration.error_handle.call(Jobmon::RequestError.new(e))
       nil
+    end
+
+    private
+
+    def logging(text, level: :info)
+      log_text = "[Jobmon] #{text}"
+      logger&.public_send(level, log_text)
+    end
+
+    def logger
+      Jobmon.configuration.logger
     end
   end
 end
