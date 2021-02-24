@@ -18,7 +18,7 @@ Or install it yourself as:
 
 ## Usage
 
-https://job-mon.sg-apps.com で監視するアプリケーションを登録します。
+JobmonWebで監視するアプリケーションを登録します。
 
 以下のコマンドを実行します。
 
@@ -28,7 +28,7 @@ bin/rails g jobmon
 
 作成された`config/initializers/jobmon.rb`に監視するアプリケーションの`api_key`を設定します。
 
-以下の確認用のコマンドで https://job-mon.sg-apps.com のアプリケーション上で Jobs が登録されることを確認してください。
+以下の確認用のコマンドでJobmonWebのアプリケーション上で Jobs が登録されることを確認してください。
 
 ```
 bundle exec jobmon --name test_job --cmd "echo test"
