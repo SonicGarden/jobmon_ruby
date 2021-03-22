@@ -1,5 +1,6 @@
 require 'spec_helper'
 require 'ostruct'
+require 'timecop'
 
 class Jobmon::DummyLogger
   attr_reader :stream
@@ -173,16 +174,21 @@ describe Jobmon::Client do
     end
 
     it 'エラーハンドラが呼ばれないこと' do
-      stubs.put('/api/apps/test_key/jobs/333/finished.json') do |env|
-        expect(env.request_body).to eq "{\"job\":{\"rails_env\":\"development\"}}"
-        [
-          200,
-          { 'Content-Type': 'application/json' },
-          '{"id": 333}'
-        ]
+      # NOTE: テスト実行環境のタイムゾーンに影響受けないように
+      Time.use_zone('Tokyo') do
+        Timecop.freeze('2021-03-23 07:28:48 +0900') do
+          stubs.put('/api/apps/test_key/jobs/333/finished.json') do |env|
+            expect(env.request_body).to eq "{\"job\":{\"rails_env\":\"development\",\"end_at\":\"2021-03-23 07:28:48 +0900\"}}"
+            [
+              200,
+              { 'Content-Type': 'application/json' },
+              '{"id": 333}'
+            ]
+          end
+          job_mon.job_end('test', 333)
+          expect(Jobmon.configuration.error_handle).not_to have_received(:call)
+        end
       end
-      job_mon.job_end('test', 333)
-      expect(Jobmon.configuration.error_handle).not_to have_received(:call)
     end
   end
 

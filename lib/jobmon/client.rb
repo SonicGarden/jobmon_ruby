@@ -35,6 +35,7 @@ module Jobmon
         job: {
           name: name,
           end_time: Time.current.since(estimate_time),
+          start_at: Time.current,
           rails_env: Rails.env,
           hostname: Jobmon.configuration.hostname,
         }
@@ -54,6 +55,7 @@ module Jobmon
       body = {
         job: {
           rails_env: Rails.env,
+          end_at: Time.current,
         }
       }
       Retryable.retryable(tries: 3) do
