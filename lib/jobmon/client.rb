@@ -18,11 +18,13 @@ module Jobmon
 
     def job_monitor(name, estimate_time, &block)
       begin
+        logging("before job_start #{name}")
         job_id = job_start(name, estimate_time)
-        logging("Start job #{name}")
+        logging("after job_start #{name}")
         result = block.call(job_id)
-        logging("End job #{name}")
+        logging("before job_end #{name}")
         job_end(name, job_id)
+        logging("after job_end #{name}")
         result
       rescue Exception
         logging("Failed job #{name}", level: :warn)
