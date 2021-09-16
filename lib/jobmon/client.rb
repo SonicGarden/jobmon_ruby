@@ -31,16 +31,16 @@ module Jobmon
     end
 
     def job_start(name, estimate_time)
-      body = {
-        job: {
-          name: name,
-          end_time: Time.current.since(estimate_time),
-          start_at: Time.current,
-          rails_env: Rails.env,
-          hostname: Jobmon.configuration.hostname,
-        }
-      }
       Retryable.retryable(tries: 3) do
+        body = {
+          job: {
+            name: name,
+            end_time: Time.current.since(estimate_time),
+            start_at: Time.current,
+            rails_env: Rails.env,
+            hostname: Jobmon.configuration.hostname,
+          }
+        }
         response = conn.post "/api/apps/#{api_key}/jobs.json", body
         response.body['id']
       end
