@@ -137,8 +137,10 @@ describe Jobmon::Client do
         expect(result).to eq('result')
 
         expect(Jobmon.configuration.logger.stream).to eq [
-          [:info, '[Jobmon] Start job task'],
-          [:info, '[Jobmon] End job task'],
+          [:info, '[Jobmon] before job_start task'],
+          [:info, '[Jobmon] after job_start task'],
+          [:info, '[Jobmon] before job_end task'],
+          [:info, '[Jobmon] after job_end task'],
         ]
       end
     end
