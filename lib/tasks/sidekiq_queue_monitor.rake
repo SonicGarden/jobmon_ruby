@@ -1,6 +1,7 @@
 namespace :jobmon do
   desc 'Ops monitor for Sidekiq queue for job-mon'
   task sidekiq_queue_monitor: :environment do
+    require 'sidekiq/api'
     Rails.logger.info "[INFO] Start jobmon:sidekiq_queue_monitor env:#{Rails.env}"
     stats = Sidekiq::Stats.new
     count = stats.queues.sum { |_, size| size }
