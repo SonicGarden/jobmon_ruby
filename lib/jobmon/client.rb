@@ -1,4 +1,5 @@
 require 'retryable'
+require 'securerandom'
 require 'jobmon/errors'
 
 module Jobmon
@@ -35,6 +36,8 @@ module Jobmon
     end
 
     def job_start(name, estimate_time)
+      request_uuid = SecureRandom.uuid
+
       Retryable.retryable(tries: 3) do
         body = {
           job: {
@@ -43,7 +46,8 @@ module Jobmon
             start_at: Time.current,
             rails_env: Rails.env,
             hostname: Jobmon.configuration.hostname,
-          }
+          },
+          request_uuid: request_uuid,
         }
         response = conn.post "/api/apps/#{api_key}/jobs.json", body
         response.body['id']
