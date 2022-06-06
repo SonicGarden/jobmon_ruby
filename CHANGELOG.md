@@ -1,3 +1,9 @@
+## 1.0.0
+
+- ジョブが失敗した場合にエラー終了して記録するように
+- 二重リクエスト対策
+- Drop support faraday v1
+
 ## 0.8.3
 
 - faraday_middlewareを依存から削除

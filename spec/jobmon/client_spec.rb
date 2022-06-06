@@ -69,7 +69,7 @@ describe Jobmon::Client do
     end
 
     context '実行時にエラー' do
-      it 'jobmon接続時にエラー発生すると、失敗しログに残ること' do
+      it 'ジョブ実行時にエラー発生すると、失敗しログに残ること' do
         stubs.post('/api/apps/test_key/jobs.json') do |env|
           [
             200,
@@ -77,16 +77,27 @@ describe Jobmon::Client do
             '{"id": 333}'
           ]
         end
+        stubs.put('/api/apps/test_key/jobs/333/finished.json') do |env|
+          [
+            200,
+            { 'Content-Type': 'application/json' },
+          ]
+        end
 
-        begin
+        expected = expect do
           job_mon.job_monitor('task', 10) do
             raise 'Failed to execute job'
           end
-        rescue e
-          expect(e.message).to eq 'Failed to execute job'
         end
+        expected.to raise_error(RuntimeError, 'Failed to execute job')
 
-        expect(Jobmon.configuration.logger.stream).to include [:warn, '[Jobmon] Failed job task']
+        expect(Jobmon.configuration.logger.stream).to eq [
+          [:info, "[Jobmon] before job_start task"],
+          [:info, "[Jobmon] after job_start task"],
+          [:warn, "[Jobmon] Failed job task"],
+          [:info, '[Jobmon] before job_end task'],
+          [:info, '[Jobmon] after job_end task'],
+        ]
       end
     end
 

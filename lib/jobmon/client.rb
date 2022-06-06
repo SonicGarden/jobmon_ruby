@@ -1,4 +1,5 @@
 require 'retryable'
+require 'securerandom'
 require 'jobmon/errors'
 
 module Jobmon
@@ -17,22 +18,26 @@ module Jobmon
     end
 
     def job_monitor(name, estimate_time, &block)
-      begin
-        logging("before job_start #{name}")
-        job_id = job_start(name, estimate_time)
-        logging("after job_start #{name}")
-        result = block.call(job_id)
-        logging("before job_end #{name}")
-        job_end(name, job_id)
-        logging("after job_end #{name}")
-        result
-      rescue Exception
-        logging("Failed job #{name}", level: :warn)
-        job_end(name, job_id)
-      end
+      logging("before job_start #{name}")
+      job_id = job_start(name, estimate_time)
+      logging("after job_start #{name}")
+      result = block.call(job_id)
+      logging("before job_end #{name}")
+      job_end(name, job_id)
+      logging("after job_end #{name}")
+      result
+    # NOTE: Rake.application.runから投げられる例外は全てSystemExitとなるため
+    rescue SystemExit, StandardError => e
+      logging("Failed job #{name}", level: :warn)
+      logging("before job_end #{name}")
+      job_end(name, job_id, failed: true)
+      logging("after job_end #{name}")
+      raise e
     end
 
     def job_start(name, estimate_time)
+      request_uuid = SecureRandom.uuid
+
       Retryable.retryable(tries: 3) do
         body = {
           job: {
@@ -41,7 +46,8 @@ module Jobmon
             start_at: Time.current,
             rails_env: Rails.env,
             hostname: Jobmon.configuration.hostname,
-          }
+          },
+          request_uuid: request_uuid,
         }
         response = conn.post "/api/apps/#{api_key}/jobs.json", body
         response.body['id']
@@ -52,13 +58,14 @@ module Jobmon
       nil
     end
 
-    def job_end(name, job_id)
+    def job_end(name, job_id, failed: false)
       return unless job_id
       body = {
         job: {
           rails_env: Rails.env,
           end_at: Time.current,
-        }
+          status: failed ? 'failed' : nil
+        }.compact
       }
       Retryable.retryable(tries: 3) do
         conn.put "/api/apps/#{api_key}/jobs/#{job_id}/finished.json", body
