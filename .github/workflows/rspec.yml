@@ -24,7 +24,7 @@ jobs:
       matrix:
         ruby: [2.6, 2.7]
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
     - uses: actions/cache@v1
       with:
         path: /home/runner/bundle
