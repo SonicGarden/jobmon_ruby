@@ -1,3 +1,7 @@
+## 1.1.0
+
+- Add `jobmon:send_healthcheck_mail task`
+
 ## 1.0.0
 
 - ジョブが失敗した場合にエラー終了して記録するように
