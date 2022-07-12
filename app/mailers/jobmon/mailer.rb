@@ -5,7 +5,7 @@ if defined?(ActionMailer)
     default from: Jobmon.configuration.from_email if Jobmon.configuration.from_email
 
     def healthcheck
-      to = "#{Jobmon.configuration.monitor_api_key}_#{Rails.env}@#{Jobmon.configuration.healthcheck_email_domain}"
+      to = "#{Jobmon.configuration.monitor_api_key}_#{Jobmon.configuration.release_stage}@#{Jobmon.configuration.healthcheck_email_domain}"
       mail(to: to, subject: 'Healthcheck', body: '')
     end
   end

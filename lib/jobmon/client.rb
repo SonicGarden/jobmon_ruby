@@ -44,7 +44,7 @@ module Jobmon
             name: name,
             end_time: Time.current.since(estimate_time),
             start_at: Time.current,
-            rails_env: Rails.env,
+            rails_env: Jobmon.configuration.release_stage,
             hostname: Jobmon.configuration.hostname,
           },
           request_uuid: request_uuid,
@@ -62,7 +62,7 @@ module Jobmon
       return unless job_id
       body = {
         job: {
-          rails_env: Rails.env,
+          rails_env: Jobmon.configuration.release_stage,
           end_at: Time.current,
           status: failed ? 'failed' : nil
         }.compact
@@ -80,7 +80,7 @@ module Jobmon
       body = {
         queue_log: {
           count: count,
-          rails_env: Rails.env,
+          rails_env: Jobmon.configuration.release_stage,
         }
       }
       response = conn.post "/api/apps/#{api_key}/queue_logs.json", body
