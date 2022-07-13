@@ -1,3 +1,8 @@
+## 1.2.0
+
+- deprecated: Jobmon::Configuration#available_release_stagings (代わりに Jobmon::Configuration#available_release_stages を使う)
+- 明示的に release_stage を設定可能 (Jobmon::Configuration#release_stage=)
+
 ## 1.1.0
 
 - Add `jobmon:send_healthcheck_mail task`

@@ -18,7 +18,7 @@ module Jobmon
     end
 
     def available?
-      configuration.available_release_stagings.include?(Rails.env)
+      configuration.available_release_stages.include?(configuration.release_stage)
     end
 
     def with_options(options = {}, &block)
