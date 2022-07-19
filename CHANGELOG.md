@@ -1,3 +1,7 @@
+## 1.2.1
+
+- `jobmon:send_healthcheck_mail` taskで送信されるメールに本文設定
+
 ## 1.2.0
 
 - deprecated: Jobmon::Configuration#available_release_stagings (代わりに Jobmon::Configuration#available_release_stages を使う)

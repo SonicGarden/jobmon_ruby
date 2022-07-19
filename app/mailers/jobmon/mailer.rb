@@ -6,7 +6,8 @@ if defined?(ActionMailer)
 
     def healthcheck
       to = "#{Jobmon.configuration.monitor_api_key}_#{Jobmon.configuration.release_stage}@#{Jobmon.configuration.healthcheck_email_domain}"
-      mail(to: to, subject: 'Healthcheck', body: '')
+      # NOTE: 本文無しだとsendgrid等の一部サービスで弾かれる
+      mail(to: to, subject: 'Healthcheck', body: 'Healthcheck')
     end
   end
 end
