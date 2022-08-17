@@ -1,3 +1,7 @@
+## 1.2.2
+
+- Add `jobmon:good_job_queue_monitor` task
+
 ## 1.2.1
 
 - `jobmon:send_healthcheck_mail` taskで送信されるメールに本文設定
