@@ -1,3 +1,7 @@
+## 1.2.3
+
+- Fix generator
+
 ## 1.2.2
 
 - Add `jobmon:good_job_queue_monitor` task
