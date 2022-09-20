@@ -10,7 +10,7 @@ class JobmonGenerator < Rails::Generators::Base
         Jobmon.configure do |config|
           config.monitor_api_key = "xxxxx-xxxx-xxxx-xxxx-xxxxxxxxx"
           config.error_handle = -> (e) { Bugsnag.notify(e) }
-          config.available_release_stagings = %w[staging production]
+          config.available_release_stages = %w[staging production]
           config.estimate_time = 3.minutes
           config.logger = Rails.logger
         end
