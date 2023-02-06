@@ -22,7 +22,6 @@ Gem::Specification.new do |spec|
   spec.require_paths = ["lib"]
 
   spec.add_dependency 'rails'
-  spec.add_dependency 'faraday', "~> 2.0"
   spec.add_dependency "retryable"
   spec.add_dependency 'rake', '>= 12.2.0'
   spec.add_dependency 'activesupport'

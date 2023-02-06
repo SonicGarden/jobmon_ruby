@@ -1,7 +1,6 @@
 require 'rails'
 require 'rake'
 require 'active_support/all'
-require 'faraday'
 require 'jobmon/version'
 require 'jobmon/client'
 require 'jobmon/engine'
