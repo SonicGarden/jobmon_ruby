@@ -17,16 +17,49 @@ class Jobmon::DummyLogger
   end
 end
 
+class Jobmon::DummyHttp
+  Response = Struct.new(:code, :body)
+
+  def initialize
+    @stubs = {}
+  end
+
+  def stub_post(path, &block)
+    stub('post', path, &block)
+  end
+
+  def stub_put(path, &block)
+    stub('put', path, &block)
+  end
+
+  def post(path, body)
+    call_stub('post', path, body)
+  end
+
+  def put(path, body)
+    call_stub('put', path, body)
+  end
+
+  def stub(method, path, &block)
+    @stubs["#{method}_#{path}"] = { block: block, count: 0 }
+  end
+
+  def call_stub(method, path, req_body)
+    stub = @stubs["#{method}_#{path}"]
+    stub[:count] += 1
+    status, _, body = stub[:block].call(req_body)
+
+    Response.new(status.to_s, body)
+  end
+
+  def verify_stubbed_calls
+    @stubs.values.all? { |stub| stub[:count] > 0 }
+  end
+end
+
 describe Jobmon::Client do
   let(:job_mon) { Jobmon::Client.new }
-  let(:stubs) { Faraday::Adapter::Test::Stubs.new }
-  let(:conn) do
-    Faraday.new do |b|
-      b.request  :json
-      b.response :json
-      b.adapter :test, stubs
-    end
-  end
+  let(:conn) { Jobmon::DummyHttp.new }
 
   before do
     allow(job_mon).to receive(:conn).and_return(conn)
@@ -53,12 +86,12 @@ describe Jobmon::Client do
 
     context '開始時に接続エラー' do
       it 'jobmon接続時にエラー発生してもブロックは実行されること' do
-        stubs.post('/api/apps/test_key/jobs.json') do
-          raise Faraday::ConnectionFailed, 'test error'
+        conn.stub_post '/api/apps/test_key/jobs.json' do
+          raise SocketError, 'test error'
         end
 
         expect { |b| job_mon.job_monitor('task', 10, &b) }.to yield_control
-        stubs.verify_stubbed_calls
+        conn.verify_stubbed_calls
 
         error = error_container.last
         expect(error).to be_a Jobmon::RequestError
@@ -70,14 +103,14 @@ describe Jobmon::Client do
 
     context '実行時にエラー' do
       it 'ジョブ実行時にエラー発生すると、失敗しログに残ること' do
-        stubs.post('/api/apps/test_key/jobs.json') do |env|
+        conn.stub_post('/api/apps/test_key/jobs.json') do |body|
           [
             200,
             { 'Content-Type': 'application/json' },
             '{"id": 333}'
           ]
         end
-        stubs.put('/api/apps/test_key/jobs/333/finished.json') do |env|
+        conn.stub_put('/api/apps/test_key/jobs/333/finished.json') do |req_body|
           [
             200,
             { 'Content-Type': 'application/json' },
@@ -103,19 +136,19 @@ describe Jobmon::Client do
 
     context '終了時に接続エラー' do
       it 'jobmon接続時にエラー発生してもブロックは実行されること' do
-        stubs.post('/api/apps/test_key/jobs.json') do |env|
+        conn.stub_post('/api/apps/test_key/jobs.json') do |req_body|
           [
             200,
             { 'Content-Type': 'application/json' },
             '{"id": 333}'
           ]
         end
-        stubs.put('/api/apps/test_key/jobs/333/finished.json') do |env|
-          raise Faraday::ConnectionFailed, 'test error'
+        conn.stub_put('/api/apps/test_key/jobs/333/finished.json') do |req_body|
+          raise SocketError, 'test error'
         end
 
         expect { |b| job_mon.job_monitor('task', 10, &b) }.to yield_control
-        stubs.verify_stubbed_calls
+        conn.verify_stubbed_calls
 
         error = error_container.last
         expect(error).to be_a Jobmon::RequestError
@@ -127,14 +160,14 @@ describe Jobmon::Client do
 
     context '正常に実行および送信できたとき' do
       it 'タスクが実行されサーバへ開始、終了通知が送信される' do
-        stubs.post('/api/apps/test_key/jobs.json') do |env|
+        conn.stub_post('/api/apps/test_key/jobs.json') do |req_body|
           [
             200,
             { 'Content-Type': 'application/json' },
             '{"id": 333}'
           ]
         end
-        stubs.put('/api/apps/test_key/jobs/333/finished.json') do |env|
+        conn.stub_put('/api/apps/test_key/jobs/333/finished.json') do |req_body|
           [
             200,
             { 'Content-Type': 'application/json' },
@@ -165,9 +198,8 @@ describe Jobmon::Client do
     end
 
     it do
-      stubs.post('/api/apps/test_key/jobs.json') do |env|
-        params = JSON.parse(env.request_body)
-        expect(params['job']['hostname']).to eq 'dummyhost'
+      conn.stub_post('/api/apps/test_key/jobs.json') do |req_body|
+        expect(JSON.parse(req_body)['job']['hostname']).to eq 'dummyhost'
 
         [
           200,
@@ -176,7 +208,7 @@ describe Jobmon::Client do
         ]
       end
       expect(job_mon.job_start('task', 10)).to eq 333
-      stubs.verify_stubbed_calls
+      conn.verify_stubbed_calls
     end
   end
 
@@ -189,8 +221,8 @@ describe Jobmon::Client do
       # NOTE: テスト実行環境のタイムゾーンに影響受けないように
       Time.use_zone('Tokyo') do
         travel_to('2021-03-23 07:28:48 +0900') do
-          stubs.put('/api/apps/test_key/jobs/333/finished.json') do |env|
-            expect(env.request_body).to eq "{\"job\":{\"rails_env\":\"development\",\"end_at\":\"2021-03-23 07:28:48 +0900\"}}"
+          conn.stub_put('/api/apps/test_key/jobs/333/finished.json') do |req_body|
+            expect(req_body).to eq "{\"job\":{\"rails_env\":\"development\",\"end_at\":\"2021-03-23 07:28:48 +0900\"}}"
             [
               200,
               { 'Content-Type': 'application/json' },
@@ -206,8 +238,8 @@ describe Jobmon::Client do
 
   describe '#send_queue_log' do
     it do
-      stubs.post('/api/apps/test_key/queue_logs.json') do |env|
-        expect(env.request_body).to eq "{\"queue_log\":{\"count\":10,\"rails_env\":\"development\"}}"
+      conn.stub_post('/api/apps/test_key/queue_logs.json') do |req_body|
+        expect(req_body).to eq "{\"queue_log\":{\"count\":10,\"rails_env\":\"development\"}}"
         [
           200,
           { 'Content-Type': 'application/json' },
