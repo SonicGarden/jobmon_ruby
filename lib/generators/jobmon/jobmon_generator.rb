@@ -13,6 +13,9 @@ class JobmonGenerator < Rails::Generators::Base
           config.available_release_stages = %w[staging production]
           config.estimate_time = 3.minutes
           config.logger = Rails.logger
+
+          # Configure the parent class responsible to send e-mails.
+          # config.parent_mailer = 'ApplicationMailer'
         end
       EOF
     end
