@@ -12,8 +12,8 @@ Gem::Specification.new do |spec|
   spec.summary       = %q{Jobmon}
   spec.description   = %q{Jobmon}
   spec.homepage      = "https://github.com/SonicGarden/jobmon_ruby"
-  spec.changelog_uri = "https://github.com/SonicGarden/jobmon_ruby/releases"
   spec.license       = "MIT"
+  spec.metadata["changelog_uri"] = "https://github.com/SonicGarden/jobmon_ruby/releases"
 
   spec.files         = `git ls-files -z`.split("\x0").reject do |f|
     f.match(%r{^(test|spec|features)/})
