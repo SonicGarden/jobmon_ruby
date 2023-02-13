@@ -38,11 +38,19 @@ describe Jobmon::CLI do
   end
 
   describe '#run' do
-    let (:client) { Jobmon::Client.new }
+    let(:client) { Jobmon::Client.new }
     let(:cli) { Jobmon::CLI.new(argv) }
+    let(:api_base_url) { 'https://job-mon.sg-apps.com' }
+    let(:start_api_url) { "#{api_base_url}/api/apps/test_key/jobs.json" }
+    let(:finish_api_url) { "#{api_base_url}/api/apps/test_key/jobs/333/finished.json" }
+    let(:stub_job_response_json) { { id: 333 }.to_json }
 
     before do
       allow(cli).to receive(:client).and_return(client)
+      stub_request(:post, start_api_url)
+        .to_return(status: 200, body: stub_job_response_json, headers: { 'Content-Type': 'application/json' })
+      stub_request(:put, "#{api_base_url}/api/apps/test_key/jobs/333/finished.json")
+        .to_return(status: 200, body: stub_job_response_json, headers: { 'Content-Type': 'application/json' })
     end
 
     context '-e 100 -n sample -c "echo test"' do
