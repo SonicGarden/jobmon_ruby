@@ -1,3 +1,5 @@
+# Moved to https://github.com/SonicGarden/jobmon_ruby/releases
+
 ## 1.2.3
 
 - Fix generator

@@ -1,16 +1,12 @@
 require 'retryable'
 require 'securerandom'
 require 'jobmon/errors'
+require 'jobmon/http_connection'
 
 module Jobmon
   class Client
     def conn
-      @conn ||= Faraday.new(url: Jobmon.configuration.endpoint) do |faraday|
-        faraday.request  :url_encoded
-        faraday.request  :json
-        faraday.response :json
-        faraday.adapter  Faraday.default_adapter
-      end
+      @conn ||= Jobmon::HttpConnection.new(url: Jobmon.configuration.endpoint)
     end
 
     def api_key

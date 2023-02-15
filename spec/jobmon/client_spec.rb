@@ -19,18 +19,10 @@ end
 
 describe Jobmon::Client do
   let(:job_mon) { Jobmon::Client.new }
-  let(:stubs) { Faraday::Adapter::Test::Stubs.new }
-  let(:conn) do
-    Faraday.new do |b|
-      b.request  :json
-      b.response :json
-      b.adapter :test, stubs
-    end
-  end
-
-  before do
-    allow(job_mon).to receive(:conn).and_return(conn)
-  end
+  let(:api_base_url) { 'https://job-mon.sg-apps.com' }
+  let(:start_api_url) { "#{api_base_url}/api/apps/test_key/jobs.json" }
+  let(:finish_api_url) { "#{api_base_url}/api/apps/test_key/jobs/333/finished.json" }
+  let(:stub_job_response_json) { { id: 333 }.to_json }
 
   describe '#job_monitor' do
     before do
@@ -53,16 +45,14 @@ describe Jobmon::Client do
 
     context '開始時に接続エラー' do
       it 'jobmon接続時にエラー発生してもブロックは実行されること' do
-        stubs.post('/api/apps/test_key/jobs.json') do
-          raise Faraday::ConnectionFailed, 'test error'
-        end
+        stub_request(:post, start_api_url)
+          .to_raise(Net::OpenTimeout)
 
         expect { |b| job_mon.job_monitor('task', 10, &b) }.to yield_control
-        stubs.verify_stubbed_calls
 
         error = error_container.last
         expect(error).to be_a Jobmon::RequestError
-        expect(error.message).to eq 'test error'
+        expect(error.message).to start_with 'Jobmon::HttpConnection::ConnectionFailed'
 
         expect(Jobmon.configuration.logger.stream).to include [:warn, '[Jobmon] Failed to send job_start task']
       end
@@ -70,19 +60,10 @@ describe Jobmon::Client do
 
     context '実行時にエラー' do
       it 'ジョブ実行時にエラー発生すると、失敗しログに残ること' do
-        stubs.post('/api/apps/test_key/jobs.json') do |env|
-          [
-            200,
-            { 'Content-Type': 'application/json' },
-            '{"id": 333}'
-          ]
-        end
-        stubs.put('/api/apps/test_key/jobs/333/finished.json') do |env|
-          [
-            200,
-            { 'Content-Type': 'application/json' },
-          ]
-        end
+        stub_request(:post, start_api_url)
+          .to_return(status: 200, body: stub_job_response_json, headers: { 'Content-Type': 'application/json' })
+        stub_request(:put, "#{api_base_url}/api/apps/test_key/jobs/333/finished.json")
+          .to_return(status: 200, body: stub_job_response_json, headers: { 'Content-Type': 'application/json' })
 
         expected = expect do
           job_mon.job_monitor('task', 10) do
@@ -98,49 +79,38 @@ describe Jobmon::Client do
           [:info, '[Jobmon] before job_end task'],
           [:info, '[Jobmon] after job_end task'],
         ]
+
+        expect(WebMock).to have_requested(:post, start_api_url)
+        expect(WebMock).to have_requested(:put, finish_api_url)
       end
     end
 
     context '終了時に接続エラー' do
       it 'jobmon接続時にエラー発生してもブロックは実行されること' do
-        stubs.post('/api/apps/test_key/jobs.json') do |env|
-          [
-            200,
-            { 'Content-Type': 'application/json' },
-            '{"id": 333}'
-          ]
-        end
-        stubs.put('/api/apps/test_key/jobs/333/finished.json') do |env|
-          raise Faraday::ConnectionFailed, 'test error'
-        end
+        stub_request(:post, start_api_url)
+          .to_return(status: 200, body: stub_job_response_json, headers: { 'Content-Type': 'application/json' })
+        stub_request(:put, finish_api_url)
+          .to_raise(Net::OpenTimeout)
 
         expect { |b| job_mon.job_monitor('task', 10, &b) }.to yield_control
-        stubs.verify_stubbed_calls
 
         error = error_container.last
         expect(error).to be_a Jobmon::RequestError
-        expect(error.message).to eq 'test error'
+        expect(error.message).to start_with 'Jobmon::HttpConnection::ConnectionFailed'
 
         expect(Jobmon.configuration.logger.stream).to include [:warn, '[Jobmon] Failed to send job_end task']
+
+        expect(WebMock).to have_requested(:post, start_api_url)
+        expect(WebMock).to have_requested(:put, finish_api_url).times(3)
       end
     end
 
     context '正常に実行および送信できたとき' do
       it 'タスクが実行されサーバへ開始、終了通知が送信される' do
-        stubs.post('/api/apps/test_key/jobs.json') do |env|
-          [
-            200,
-            { 'Content-Type': 'application/json' },
-            '{"id": 333}'
-          ]
-        end
-        stubs.put('/api/apps/test_key/jobs/333/finished.json') do |env|
-          [
-            200,
-            { 'Content-Type': 'application/json' },
-            '{"id": 333}'
-          ]
-        end
+        stub_request(:post, start_api_url)
+          .to_return(status: 200, body: stub_job_response_json, headers: { 'Content-Type': 'application/json' })
+        stub_request(:put, "#{api_base_url}/api/apps/test_key/jobs/333/finished.json")
+          .to_return(status: 200, body: stub_job_response_json, headers: { 'Content-Type': 'application/json' })
 
         result = job_mon.job_monitor('task', 10) do
           'result'
@@ -153,6 +123,9 @@ describe Jobmon::Client do
           [:info, '[Jobmon] before job_end task'],
           [:info, '[Jobmon] after job_end task'],
         ]
+
+        expect(WebMock).to have_requested(:post, start_api_url)
+        expect(WebMock).to have_requested(:put, finish_api_url)
       end
     end
   end
@@ -165,18 +138,13 @@ describe Jobmon::Client do
     end
 
     it do
-      stubs.post('/api/apps/test_key/jobs.json') do |env|
-        params = JSON.parse(env.request_body)
-        expect(params['job']['hostname']).to eq 'dummyhost'
+      stub_request(:post, start_api_url)
+        .to_return(status: 200, body: stub_job_response_json, headers: { 'Content-Type': 'application/json' })
 
-        [
-          200,
-          { 'Content-Type': 'application/json' },
-          '{"id": 333}'
-        ]
-      end
       expect(job_mon.job_start('task', 10)).to eq 333
-      stubs.verify_stubbed_calls
+
+      expect(WebMock).to have_requested(:post, start_api_url).
+        with { |req| JSON.parse(req.body)['job']['hostname'] == 'dummyhost' }
     end
   end
 
@@ -189,32 +157,30 @@ describe Jobmon::Client do
       # NOTE: テスト実行環境のタイムゾーンに影響受けないように
       Time.use_zone('Tokyo') do
         travel_to('2021-03-23 07:28:48 +0900') do
-          stubs.put('/api/apps/test_key/jobs/333/finished.json') do |env|
-            expect(env.request_body).to eq "{\"job\":{\"rails_env\":\"development\",\"end_at\":\"2021-03-23 07:28:48 +0900\"}}"
-            [
-              200,
-              { 'Content-Type': 'application/json' },
-              '{"id": 333}'
-            ]
-          end
+          stub_request(:put, finish_api_url)
+            .with(body: "{\"job\":{\"rails_env\":\"development\",\"end_at\":\"2021-03-23T07:28:48.000+09:00\"}}")
+            .to_return(status: 200, body: stub_job_response_json, headers: { 'Content-Type': 'application/json' })
+
           job_mon.job_end('test', 333)
           expect(Jobmon.configuration.error_handle).not_to have_received(:call)
+
+          expect(WebMock).to have_requested(:put, finish_api_url)
         end
       end
     end
   end
 
   describe '#send_queue_log' do
+    let(:queue_api_url) { "#{api_base_url}/api/apps/test_key/queue_logs.json" }
+
     it do
-      stubs.post('/api/apps/test_key/queue_logs.json') do |env|
-        expect(env.request_body).to eq "{\"queue_log\":{\"count\":10,\"rails_env\":\"development\"}}"
-        [
-          200,
-          { 'Content-Type': 'application/json' },
-          '{"id": 333}'
-        ]
-      end
+      stub_request(:post, queue_api_url)
+        .with(body: "{\"queue_log\":{\"count\":10,\"rails_env\":\"development\"}}")
+        .to_return(status: 200, body: { id: 333 }.to_json, headers: { 'Content-Type': 'application/json' })
+
       expect(job_mon.send_queue_log(10)).to eq 333
+
+      expect(WebMock).to have_requested(:post, queue_api_url)
     end
   end
 end
