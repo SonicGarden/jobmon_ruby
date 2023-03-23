@@ -52,6 +52,10 @@ job_type :jobmon, 'cd :path && bundle exec jobmon --estimate-time :estimate_time
 
 every 10.minutes do
   jobmon 'cron:hoge_task'
+
+  # rake 'jobmon:delayed_job_queue_monitor'
+  # rake 'jobmon:good_job_queue_monitor'
+  # rake 'jobmon:sidekiq_queue_monitor'
 end
 
 every 1.day, at: '00:00' do
