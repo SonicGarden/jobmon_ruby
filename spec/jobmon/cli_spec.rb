@@ -123,5 +123,23 @@ describe Jobmon::CLI do
         expect(bar).to eq '2'
       end
     end
+
+    context '存在しないタスク名が指定された場合' do
+      let(:argv) { ['--estimate-time', '100', 'undefined'] }
+
+      before do
+        allow(Jobmon.configuration.error_handle).to receive(:call)
+      end
+
+      after do
+        Rake::Task.clear
+      end
+
+      it 'Jobmon.configuration.error_handleが呼ばれること' do
+        Rake::Task.define_task(:environment) {}
+        expect { cli.run }.to raise_error SystemExit
+        expect(Jobmon.configuration.error_handle).to have_received(:call)
+      end
+    end
   end
 end
