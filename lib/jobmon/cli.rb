@@ -3,6 +3,15 @@ require 'rake'
 require 'jobmon/client'
 
 module Jobmon
+  module RakeApplication
+    # NOTE: 存在しないタスク名が指定された場合にerror_handleが呼ばれるようにしている
+    # TODO: test
+    def exit_because_of_exception(ex)
+      Jobmon.configuration.error_handle.call(ex)
+      super
+    end
+  end
+
   class CLI
     attr_reader :options, :task_argv
 
@@ -73,3 +82,5 @@ module Jobmon
     end
   end
 end
+
+Rake::Application.prepend(Jobmon::RakeApplication)
