@@ -14,10 +14,12 @@ module Jobmon
     end
 
     def job_monitor(name, estimate_time, &block)
+      return block.call unless Jobmon.available?
+
       logging("before job_start #{name}")
       job_id = job_start(name, estimate_time)
       logging("after job_start #{name}")
-      result = block.call(job_id)
+      result = block.call
       logging("before job_end #{name}")
       job_end(name, job_id)
       logging("after job_end #{name}")

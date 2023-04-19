@@ -19,15 +19,5 @@ module Jobmon
     def release_stage
       @release_stage || Rails.env
     end
-
-    def available_release_stagings
-      ActiveSupport::Deprecation.warn('`available_release_stagings` is deprecated. Please use `available_release_stages` instead.')
-      available_release_stages
-    end
-
-    def available_release_stagings=(stages)
-      ActiveSupport::Deprecation.warn('`available_release_stagings=` is deprecated. Please use `available_release_stages=` instead.')
-      self.available_release_stages = stages
-    end
   end
 end
