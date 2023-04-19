@@ -128,6 +128,21 @@ describe Jobmon::Client do
         expect(WebMock).to have_requested(:put, finish_api_url)
       end
     end
+
+    context 'Jobmon.available?がfalseの場合', no_jobmon_mock: true do
+      before do
+        allow(Jobmon).to receive(:available?).and_return(false)
+        allow(job_mon).to receive(:job_start)
+        allow(job_mon).to receive(:job_end)
+      end
+
+      it 'job_startとjob_endが呼ばれないこと' do
+        result = job_mon.job_monitor('task', 10) { 'result' }
+        expect(result).to eq('result')
+        expect(job_mon).not_to have_received(:job_start)
+        expect(job_mon).not_to have_received(:job_end)
+      end
+    end
   end
 
   describe '#job_start' do
