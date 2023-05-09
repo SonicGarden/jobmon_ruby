@@ -4,7 +4,7 @@ require 'shellwords'
 
 # ActiveJobバックエンドのスケジューラからの呼び出し用
 class Jobmon::TaskJob < ActiveJob::Base
-  queue_as Jobmon.configuration.default_task_job_queue
+  queue_as Jobmon.configuration.task_job_queue
 
   def perform(task:, estimate_time: nil, name: nil)
     options = {
