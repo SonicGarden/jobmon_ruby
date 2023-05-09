@@ -5,7 +5,7 @@ class Jobmon::TaskJob < ActiveJob::Base
   queue_as Jobmon.configuration.default_task_job_queue
 
   # TODO: test
-  def perform(task:, estimate_time: 60, name: nil)
+  def perform(task:, estimate_time: nil, name: nil)
     options = {
       estimate_time:,
       name:,
