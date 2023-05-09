@@ -7,8 +7,8 @@ class Jobmon::TaskJob < ActiveJob::Base
   # TODO: test
   def perform(task:, estimate_time: nil, name: nil)
     options = {
-      estimate_time:,
-      name:,
+      estimate_time: estimate_time,
+      name: name,
     }.compact.map { |k, v| "--#{k.to_s.dasherize} #{v}" }.join(' ')
 
     Kernel.system(
