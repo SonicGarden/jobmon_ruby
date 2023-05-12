@@ -2,7 +2,8 @@ require 'socket'
 
 module Jobmon
   class Configuration
-    attr_accessor :monitor_api_key, :error_handle, :release_stage, :available_release_stages, :estimate_time, :logger, :endpoint, :hostname, :healthcheck_email_domain, :from_email, :parent_mailer
+    attr_accessor :monitor_api_key, :error_handle, :release_stage, :available_release_stages, :estimate_time,
+      :logger, :endpoint, :hostname, :healthcheck_email_domain, :from_email, :parent_mailer, :task_job_queue
 
     def initialize
       self.endpoint = 'https://job-mon.sg-apps.com'
@@ -14,6 +15,7 @@ module Jobmon
       self.hostname = Socket.gethostname
       self.logger = Rails.logger
       self.parent_mailer = 'ApplicationMailer'
+      self.task_job_queue = :default
     end
 
     def release_stage
