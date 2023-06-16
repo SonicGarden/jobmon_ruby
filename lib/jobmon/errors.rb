@@ -7,4 +7,7 @@ module Jobmon
       super(error.message)
     end
   end
+
+  class TaskJobError < StandardError
+  end
 end
