@@ -22,6 +22,10 @@ class Jobmon::TaskJob < ActiveJob::Base
       chdir: Rails.root.to_s
     )
 
+    if ActiveSupport::Logger.logger_outputs_to?(Rails.logger, $stdout)
+      $stdout.puts out
+    end
+
     raise Jobmon::TaskJobError.new(error) unless status.success?
   end
 end
