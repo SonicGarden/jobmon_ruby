@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require 'shellwords'
-require 'open3'
 
 # ActiveJobバックエンドのスケジューラからの呼び出し用
 class Jobmon::TaskJob < ActiveJob::Base
@@ -13,19 +12,19 @@ class Jobmon::TaskJob < ActiveJob::Base
       name: name,
     }.compact.flat_map { |k, v| ["--#{k.to_s.dasherize}", v.to_s] }
 
-    out, error, status = Open3.capture3(
+    r, w = IO.pipe
+    result = Kernel.system(
       'bundle',
       'exec',
       'jobmon',
       *options,
       *Shellwords.shellwords(task),
-      chdir: Rails.root.to_s
+      chdir: Rails.root.to_s,
+      out: $stdout,
+      err: w
     )
+    w.close
 
-    if ActiveSupport::Logger.logger_outputs_to?(Rails.logger, $stdout)
-      $stdout.puts out
-    end
-
-    raise Jobmon::TaskJobError.new(error) unless status.success?
+    raise Jobmon::TaskJobError.new(r.read) unless result
   end
 end
