@@ -1,6 +1,11 @@
 namespace :jobmon do
   desc 'Ops monitor for Sidekiq queue for job-mon'
   task sidekiq_queue_monitor: :environment do
+    unless Jobmon.available?
+      Rails.logger.info "[INFO] jobmon:sidekiq_queue_monitor is not available env:#{Jobmon.configuration.release_stage}"
+      next
+    end
+
     require 'sidekiq/api'
     Rails.logger.info "[INFO] Start jobmon:sidekiq_queue_monitor env:#{Jobmon.configuration.release_stage}"
     stats = Sidekiq::Stats.new
