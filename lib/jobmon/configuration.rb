@@ -15,7 +15,7 @@ module Jobmon
       self.hostname = Socket.gethostname
       self.logger = Rails.logger
       self.parent_mailer = 'ApplicationMailer'
-      self.task_job_queue = :default
+      self.task_job_queue = :jobmon_task
     end
 
     def release_stage
