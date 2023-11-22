@@ -28,6 +28,7 @@ module Jobmon
 
     def run_command
       raise 'Command is empty.' if options[:cmd].nil?
+
       name = options.fetch(:name) { options[:cmd].split(' ', 2).first }
 
       client.job_monitor(name, estimate_time) do
@@ -44,6 +45,15 @@ module Jobmon
         Rake.application.run(task_argv)
       end
       0
+
+    # NOTE: Rake.application.runから投げられる例外は全てSystemExitとなるため
+    rescue SystemExit, StandardError => e
+      if options[:suppress_errors]
+        Jobmon.configuration.error_handle.call(e)
+        return 0
+      end
+
+      raise e
     end
 
     def estimate_time
@@ -68,6 +78,9 @@ module Jobmon
         end
         opts.on('-c', '--cmd [cmd]') do |cmd|
           @options[:cmd] = cmd if cmd
+        end
+        opts.on('-s', '--suppress-errors') do
+          @options[:suppress_errors] = true
         end
       end
     end
