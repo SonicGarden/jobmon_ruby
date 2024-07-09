@@ -5,6 +5,7 @@ require 'jobmon/version'
 require 'jobmon/client'
 require 'jobmon/engine'
 require 'jobmon/configuration'
+require 'jobmon/active_job_extension'
 
 module Jobmon
   class << self
