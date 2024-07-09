@@ -5,7 +5,7 @@
 Add this line to your application's Gemfile:
 
 ```ruby
-gem 'jobmon', github: 'SonicGarden/jobmon_ruby'
+gem 'jobmon', github: 'SonicGarden/jobmon_ruby', branch: 'main'
 ```
 
 And then execute:
