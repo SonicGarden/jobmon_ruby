@@ -5,7 +5,7 @@
 Add this line to your application's Gemfile:
 
 ```ruby
-gem 'jobmon', github: 'SonicGarden/jobmon_ruby'
+gem 'jobmon', github: 'SonicGarden/jobmon_ruby', branch: 'main'
 ```
 
 And then execute:
@@ -41,25 +41,20 @@ jobmon --estimate-time 600 cron:sample_task
 jobmon --estimate-time 600 --name sample --cmd "bin/rails runner scripts/sample.rb"
 ```
 
-In `config/schedule.rb`:
+### ActiveJobExtensionの使い方
+
+JobmonをActiveJobと組み合わせて使用することで、Railsアプリケーション内のジョブの実行を簡単に監視することができます。以下の手順に従って設定してください。
 
 ```ruby
-set :path, File.realpath('../', __dir__)
-set :output, "#{path}/log/batch.log"
-set :estimate_time, 180
+class SampleJob < ApplicationJob
+  include Jobmon::ActiveJobExtension
 
-job_type :jobmon, 'cd :path && bundle exec jobmon --estimate-time :estimate_time :task  :output'
+  # Optional
+  jobmon_with(name: 'jobmonに表示される定期タスク名', estimate_time: 1.minute)
 
-every 10.minutes do
-  jobmon 'cron:hoge_task'
-
-  # rake 'jobmon:delayed_job_queue_monitor'
-  # rake 'jobmon:good_job_queue_monitor'
-  # rake 'jobmon:sidekiq_queue_monitor'
-end
-
-every 1.day, at: '00:00' do
-  jobmon 'cron:heavy_task', estimate_time: 600
+  def perform(*args)
+    # 実行したい処理
+  end
 end
 ```
 
