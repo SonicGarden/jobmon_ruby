@@ -74,9 +74,13 @@ describe Jobmon::Client do
 
         expect(Jobmon.configuration.logger.stream).to eq [
           [:info, "[Jobmon] before job_start task"],
+          [:info, "[Jobmon] Sending job_start request for task"],
+          [:info, "[Jobmon] Received response for job_start request for task, status: 200"],
           [:info, "[Jobmon] after job_start task"],
           [:warn, "[Jobmon] Failed job task"],
           [:info, '[Jobmon] before job_end task'],
+          [:info, "[Jobmon] Sending job_end request for task"],
+          [:info, "[Jobmon] Received response for job_end request for task, status: 200"],
           [:info, '[Jobmon] after job_end task'],
         ]
 
@@ -119,8 +123,12 @@ describe Jobmon::Client do
 
         expect(Jobmon.configuration.logger.stream).to eq [
           [:info, '[Jobmon] before job_start task'],
+          [:info, "[Jobmon] Sending job_start request for task"],
+          [:info, "[Jobmon] Received response for job_start request for task, status: 200"],
           [:info, '[Jobmon] after job_start task'],
           [:info, '[Jobmon] before job_end task'],
+          [:info, "[Jobmon] Sending job_end request for task"],
+          [:info, "[Jobmon] Received response for job_end request for task, status: 200"],
           [:info, '[Jobmon] after job_end task'],
         ]
 

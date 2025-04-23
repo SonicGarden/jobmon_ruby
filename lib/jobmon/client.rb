@@ -47,7 +47,9 @@ module Jobmon
           },
           request_uuid: request_uuid,
         }
+        logging("Sending job_start request for #{name}")
         response = conn.post "/api/apps/#{api_key}/jobs.json", body
+        logging("Received response for job_start request for #{name}, status: #{response.status}")
         response.body['id']
       end
     rescue => e
@@ -66,7 +68,9 @@ module Jobmon
         }.compact
       }
       Retryable.retryable(tries: 3) do
-        conn.put "/api/apps/#{api_key}/jobs/#{job_id}/finished.json", body
+        logging("Sending job_end request for #{name}")
+        response = conn.put "/api/apps/#{api_key}/jobs/#{job_id}/finished.json", body
+        logging("Received response for job_end request for #{name}, status: #{response.status}")
       end
     rescue => e
       logging("Failed to send job_end #{name}", level: :warn)
@@ -81,7 +85,9 @@ module Jobmon
           rails_env: Jobmon.configuration.release_stage,
         }
       }
+      logging("Sending send_queue_log request with count #{count}")
       response = conn.post "/api/apps/#{api_key}/queue_logs.json", body
+      logging("Received response for send_queue_log request with count #{count}, status: #{response.status}")
       response.body['id']
     rescue => e
       logging("Failed to send send_queue_log", level: :warn)
