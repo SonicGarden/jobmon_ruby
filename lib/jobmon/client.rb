@@ -85,12 +85,14 @@ module Jobmon
           rails_env: Jobmon.configuration.release_stage,
         }
       }
-      logging("Sending send_queue_log request with count #{count}")
-      response = conn.post "/api/apps/#{api_key}/queue_logs.json", body
-      logging("Received response for send_queue_log request with count #{count}, status: #{response.status}")
-      response.body['id']
+      Retryable.retryable(tries: 3) do
+        logging("Sending send_queue_log request with count #{count}")
+        response = conn.post "/api/apps/#{api_key}/queue_logs.json", body
+        logging("Received response for send_queue_log request with count #{count}, status: #{response.status}")
+        response.body['id']
+      end
     rescue => e
-      logging("Failed to send send_queue_log", level: :warn)
+      logging("Failed to send send_queue_log: #{e.message}", level: :warn)
       Jobmon.configuration.error_handle.call(Jobmon::RequestError.new(e))
       nil
     end
