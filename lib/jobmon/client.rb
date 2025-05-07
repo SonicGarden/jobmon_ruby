@@ -90,7 +90,7 @@ module Jobmon
       logging("Received response for send_queue_log request with count #{count}, status: #{response.status}")
       response.body['id']
     rescue => e
-      logging("Failed to send send_queue_log", level: :warn)
+      logging("Failed to send send_queue_log: #{e.message}", level: :warn)
       Jobmon.configuration.error_handle.call(Jobmon::RequestError.new(e))
       nil
     end
