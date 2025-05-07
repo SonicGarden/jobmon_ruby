@@ -24,11 +24,15 @@ module Jobmon
       OpenSSL::SSL::SSLError,
       Net::OpenTimeout,
     ].freeze
+    TIMEOUT = 10
 
     def initialize(url:)
       uri = URI.parse(url)
       @http = Net::HTTP.new(uri.host, uri.port)
       @http.use_ssl = uri.scheme == 'https'
+      @http.open_timeout = TIMEOUT
+      @http.read_timeout = TIMEOUT
+      @http.write_timeout = TIMEOUT
     end
 
     def post(url, body_hash)
