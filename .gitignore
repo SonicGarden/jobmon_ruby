@@ -1,5 +1,6 @@
 /config/initializers/jobmon.rb
 /Gemfile.lock
+/gemfiles/*.gemfile.lock
 /vendor/bundle
 
 
