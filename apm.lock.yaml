@@ -1,0 +1,18 @@
+lockfile_version: '1'
+generated_at: '2026-07-13T01:57:24.435837+00:00'
+apm_version: 0.21.0
+dependencies:
+- repo_url: aki77/skills
+  host: github.com
+  resolved_commit: 1c2eb12b5a58cdcfbd4259879369be04fd1214f9
+  virtual_path: skills/ruby/ruby-rails-ci-matrix
+  is_virtual: true
+  package_type: claude_skill
+  deployed_files:
+  - .claude/skills/ruby-rails-ci-matrix
+  - .claude/skills/ruby-rails-ci-matrix/SKILL-ja.md
+  - .claude/skills/ruby-rails-ci-matrix/SKILL.md
+  deployed_file_hashes:
+    .claude/skills/ruby-rails-ci-matrix/SKILL-ja.md: sha256:ee4391a520748b84e348c3dfc15a3ffddd54bae5c1c992919c77581621d278bd
+    .claude/skills/ruby-rails-ci-matrix/SKILL.md: sha256:19684c44fddaba29e132274af97c95a6e3b58f0299617611dd7cda65966057ea
+  content_hash: sha256:6989f4ab6ec3d6426d748b86d2be7e1f432c83afa617973e63eb2be096737c53
