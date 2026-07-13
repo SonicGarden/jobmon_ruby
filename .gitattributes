@@ -1,0 +1,4 @@
+# See https://git-scm.com/docs/gitattributes for more about git attribute files.
+
+.claude/skills/** linguist-generated
+apm.lock.yaml linguist-generated
