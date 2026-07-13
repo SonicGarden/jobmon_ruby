@@ -29,7 +29,6 @@ Gem::Specification.new do |spec|
   spec.add_dependency 'rake', '>= 12.2.0'
   spec.add_dependency 'activesupport'
 
-  spec.add_development_dependency "bundler", "~> 2.0"
   spec.add_development_dependency "ostruct"
   spec.add_development_dependency "rspec", "~> 3.0"
   spec.add_development_dependency "webmock", "~> 3.0"
