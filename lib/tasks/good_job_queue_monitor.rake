@@ -1,13 +1,6 @@
 namespace :jobmon do
-  desc 'Ops monitor for good_job queue for job-mon'
+  desc '[DEPRECATED] Use jobmon:queue_monitor instead'
   task good_job_queue_monitor: :environment do
-    unless Jobmon.available?
-      Rails.logger.info "[INFO] jobmon:good_job_queue_monitor is not available env:#{Jobmon.configuration.release_stage}"
-      next
-    end
-
-    Rails.logger.info "[INFO] Start jobmon:good_job_queue_monitor env:#{Jobmon.configuration.release_stage}"
-    Jobmon::Client.new.send_queue_log(GoodJob::Job.queued.count)
-    Rails.logger.info "[INFO] End jobmon:good_job_queue_monitor env:#{Jobmon.configuration.release_stage}"
+    Rake::Task['jobmon:queue_monitor'].invoke
   end
 end

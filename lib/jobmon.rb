@@ -4,6 +4,7 @@ require 'active_support/all'
 require 'jobmon/version'
 require 'jobmon/client'
 require 'jobmon/engine'
+require 'jobmon/queue_count'
 require 'jobmon/configuration'
 require 'jobmon/active_job_extension'
 
