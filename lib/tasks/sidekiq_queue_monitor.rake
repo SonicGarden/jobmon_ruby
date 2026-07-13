@@ -11,7 +11,6 @@ namespace :jobmon do
     stats = Sidekiq::Stats.new
     count = stats.queues.sum { |_, size| size }
     Jobmon::Client.new.send_queue_log(count)
-    Jobmon::HealthcheckJob.perform_later
     Rails.logger.info "[INFO] End jobmon:sidekiq_queue_monitor env:#{Jobmon.configuration.release_stage}"
   end
 end

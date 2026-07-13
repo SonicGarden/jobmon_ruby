@@ -8,7 +8,6 @@ namespace :jobmon do
 
     Rails.logger.info "[INFO] Start jobmon:solid_queue_queue_monitor env:#{Jobmon.configuration.release_stage}"
     Jobmon::Client.new.send_queue_log(SolidQueue::ReadyExecution.count)
-    Jobmon::HealthcheckJob.perform_later
     Rails.logger.info "[INFO] End jobmon:solid_queue_queue_monitor env:#{Jobmon.configuration.release_stage}"
   end
 end
