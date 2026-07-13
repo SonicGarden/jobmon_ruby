@@ -11,18 +11,25 @@ jobs:
     env:
       BUNDLE_JOBS: 4
       BUNDLE_RETRY: 3
+      BUNDLE_GEMFILE: ${{ github.workspace }}/gemfiles/${{ matrix.gemfile }}.gemfile
     strategy:
       fail-fast: false
       matrix:
-        ruby: ["3.2", "3.3", "3.4"]
+        include:
+          - { ruby: "3.3", gemfile: "rails80" }
+          - { ruby: "3.4", gemfile: "rails80" }
+          - { ruby: "4.0", gemfile: "rails80" }
+          - { ruby: "3.3", gemfile: "rails81" }
+          - { ruby: "3.4", gemfile: "rails81" }
+          - { ruby: "4.0", gemfile: "rails81" }
     steps:
       - uses: actions/checkout@v7
       - uses: actions/cache@v6
         with:
           path: /home/runner/bundle
-          key: bundle-${{ matrix.ruby }}-${{ hashFiles('**/*.gemspec') }}
+          key: bundle-${{ matrix.ruby }}-${{ matrix.gemfile }}-${{ hashFiles('**/*.gemspec') }}
           restore-keys: |
-            bundle-${{ matrix.ruby }}-
+            bundle-${{ matrix.ruby }}-${{ matrix.gemfile }}-
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
         with:

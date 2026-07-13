@@ -1,0 +1,12 @@
+name: jobmon_ruby
+version: 1.0.0
+description: APM project for jobmon_ruby
+author: aki
+dependencies:
+  apm:
+  - aki77/skills/skills/ruby/ruby-rails-ci-matrix
+  mcp: []
+includes: auto
+scripts: {}
+targets:
+  - claude
