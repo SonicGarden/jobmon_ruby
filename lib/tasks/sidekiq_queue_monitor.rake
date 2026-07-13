@@ -1,16 +1,6 @@
 namespace :jobmon do
-  desc 'Ops monitor for Sidekiq queue for job-mon'
+  desc '[DEPRECATED] Use jobmon:queue_monitor instead'
   task sidekiq_queue_monitor: :environment do
-    unless Jobmon.available?
-      Rails.logger.info "[INFO] jobmon:sidekiq_queue_monitor is not available env:#{Jobmon.configuration.release_stage}"
-      next
-    end
-
-    require 'sidekiq/api'
-    Rails.logger.info "[INFO] Start jobmon:sidekiq_queue_monitor env:#{Jobmon.configuration.release_stage}"
-    stats = Sidekiq::Stats.new
-    count = stats.queues.sum { |_, size| size }
-    Jobmon::Client.new.send_queue_log(count)
-    Rails.logger.info "[INFO] End jobmon:sidekiq_queue_monitor env:#{Jobmon.configuration.release_stage}"
+    Rake::Task['jobmon:queue_monitor'].invoke
   end
 end

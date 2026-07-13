@@ -10,4 +10,7 @@ module Jobmon
 
   class TaskJobError < StandardError
   end
+
+  class UnsupportedAdapterError < StandardError
+  end
 end
